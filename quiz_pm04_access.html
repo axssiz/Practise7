@@ -1606,15 +1606,48 @@
         show("login");
       }
 
-      function checkSession() {
+      async function checkSession() {
         try {
           const s = sessionStorage.getItem("pm04_session");
           if (s) {
-            currentUser = JSON.parse(s);
-            enterApp();
-            return true;
+            const sessionData = JSON.parse(s);
+            if (sessionData.sessionId) {
+              // Validate session with server
+              const response = await fetch(
+                `${API_BASE}/api/keys/validate-session`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    code: sessionData.key,
+                    sessionId: sessionData.sessionId,
+                  }),
+                },
+              );
+              const result = await response.json();
+              if (response.ok && result.valid) {
+                currentUser = result.user;
+                enterApp();
+                return true;
+              } else {
+                // Session invalid - clear and show login
+                sessionStorage.removeItem("pm04_session");
+                show("login");
+                alert(
+                  "Ключ был активирован на другом устройстве. Пожалуйста, используйте новый ключ.",
+                );
+                return false;
+              }
+            } else {
+              // Old session without sessionId - treat as invalid
+              sessionStorage.removeItem("pm04_session");
+              return false;
+            }
           }
-        } catch {}
+        } catch (error) {
+          console.error("Session check error:", error);
+          sessionStorage.removeItem("pm04_session");
+        }
         return false;
       }
 
@@ -5604,8 +5637,10 @@
       }
 
       // Init
-      initDB();
-      if (!checkSession()) show("login");
+      (async () => {
+        await initDB();
+        if (!(await checkSession())) show("login");
+      })();
     </script>
   </body>
 </html>

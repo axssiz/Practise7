@@ -28,6 +28,7 @@ function initDatabase() {
     used INTEGER DEFAULT 0,
     used_by TEXT,
     used_at TEXT,
+    session_id TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
@@ -89,6 +90,27 @@ app.delete("/api/keys/:code", (req, res) => {
   });
 });
 
+// Validate session for key
+app.post("/api/keys/validate-session", (req, res) => {
+  const { code, sessionId } = req.body;
+  db.get(
+    "SELECT * FROM keys WHERE code = ? AND used = 1",
+    [code],
+    (err, key) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!key) return res.status(400).json({ error: "Key not found" });
+
+      if (key.session_id === sessionId) {
+        res.json({ valid: true, user: { name: key.used_by, key: code } });
+      } else {
+        res
+          .status(401)
+          .json({ error: "Session invalid - key used on another device" });
+      }
+    },
+  );
+});
+
 // Activate key
 app.post("/api/keys/activate", (req, res) => {
   const { code, name } = req.body;
@@ -100,16 +122,17 @@ app.post("/api/keys/activate", (req, res) => {
       if (!key) return res.status(400).json({ error: "Invalid or used key" });
 
       const now = new Date().toLocaleString("ru");
+      const sessionId = generateSessionId();
       db.run(
-        "UPDATE keys SET used = 1, used_by = ?, used_at = ? WHERE code = ?",
-        [name, now, code],
+        "UPDATE keys SET used = 1, used_by = ?, used_at = ?, session_id = ? WHERE code = ?",
+        [name, now, sessionId, code],
       );
       db.run(
         "INSERT OR REPLACE INTO users (name, key_code, activated_at) VALUES (?, ?, ?)",
         [name, code, now],
       );
 
-      res.json({ success: true, user: { name, key: code } });
+      res.json({ success: true, user: { name, key: code, sessionId } });
     },
   );
 });
@@ -200,6 +223,10 @@ app.get("/api/stats", (req, res) => {
 });
 
 // Helper function
+function generateSessionId() {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
 function generateKey() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let key = "";
