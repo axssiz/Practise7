@@ -1,0 +1,5611 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ПМ04 — Тренажёр</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0f;
+        --surface: #13131a;
+        --card: #1a1a24;
+        --border: #2a2a3d;
+        --accent: #7c6aff;
+        --accent2: #00e5b0;
+        --text: #e8e8f0;
+        --muted: #6b6b88;
+        --correct: #00e5b0;
+        --wrong: #ff5566;
+        --warn: #ffb547;
+        --font-head: "Unbounded", sans-serif;
+        --font-body: "JetBrains Mono", monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        min-height: 100vh;
+      }
+
+      .screen {
+        display: none;
+        min-height: 100vh;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ===== LOGIN ===== */
+      #login {
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: var(--bg);
+        position: relative;
+        overflow: hidden;
+      }
+      #login::before {
+        content: "";
+        position: fixed;
+        top: -200px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(124, 106, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      #login::after {
+        content: "";
+        position: fixed;
+        bottom: -150px;
+        right: -150px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 229, 176, 0.07) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .login-box {
+        max-width: 420px;
+        width: 100%;
+        animation: fadeUp 0.5s ease forwards;
+      }
+      .login-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .login-logo .badge {
+        display: inline-block;
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 4px 12px;
+        border-radius: 99px;
+        margin-bottom: 1rem;
+      }
+      .login-logo h1 {
+        font-family: var(--font-head);
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+      }
+      .login-logo p {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .login-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.75rem;
+        margin-bottom: 1rem;
+      }
+      .login-card h2 {
+        font-size: 14px;
+        font-family: var(--font-head);
+        margin-bottom: 1.25rem;
+      }
+      .field {
+        margin-bottom: 1rem;
+      }
+      .field label {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .field input {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 14px;
+        letter-spacing: 0.05em;
+        transition: border-color 0.15s;
+        outline: none;
+      }
+      .field input:focus {
+        border-color: var(--accent);
+      }
+      .field input.error {
+        border-color: var(--wrong);
+      }
+      .field input::placeholder {
+        color: var(--muted);
+        letter-spacing: 0;
+      }
+      .err-msg {
+        font-size: 11px;
+        color: var(--wrong);
+        margin-top: 5px;
+        display: none;
+      }
+      .err-msg.show {
+        display: block;
+      }
+      .btn-primary {
+        width: 100%;
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.85rem;
+        font-family: var(--font-head);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        letter-spacing: 0.04em;
+        margin-top: 0.25rem;
+      }
+      .btn-primary:hover {
+        background: #9480ff;
+      }
+      .btn-secondary {
+        width: 100%;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 10px;
+        padding: 0.75rem;
+        font-family: var(--font-body);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+        margin-top: 8px;
+      }
+      .btn-secondary:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .divider {
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+        margin: 1rem 0;
+      }
+      .tg-buy {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .tg-buy:hover {
+        border-color: #29b6f6;
+        background: rgba(41, 182, 246, 0.06);
+      }
+      .tg-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #29b6f6, #0288d1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+      .tg-info {
+        flex: 1;
+      }
+      .tg-info .tg-title {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 3px;
+      }
+      .tg-info .tg-sub {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .tg-arrow {
+        color: var(--muted);
+        font-size: 18px;
+      }
+      .login-footer {
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 1rem;
+      }
+
+      /* ===== HOME ===== */
+      #home {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      #home::before {
+        content: "";
+        position: fixed;
+        top: -200px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(124, 106, 255, 0.12) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      #home::after {
+        content: "";
+        position: fixed;
+        bottom: -200px;
+        right: -200px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 229, 176, 0.08) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .home-inner {
+        max-width: 680px;
+        width: 100%;
+        text-align: center;
+        animation: fadeUp 0.6s ease forwards;
+      }
+      .home-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        font-family: var(--font-head);
+      }
+      .user-name {
+        font-size: 12px;
+      }
+      .user-name small {
+        display: block;
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .btn-logout {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-family: var(--font-body);
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-logout:hover {
+        border-color: var(--wrong);
+        color: var(--wrong);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 4px 12px;
+        border-radius: 99px;
+        margin-bottom: 1.5rem;
+      }
+      .home-title {
+        font-family: var(--font-head);
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .home-sub {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.7;
+      }
+      .variant-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 1.5rem;
+      }
+      .var-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+        color: var(--text);
+      }
+      .var-btn:hover {
+        border-color: var(--accent);
+        background: rgba(124, 106, 255, 0.08);
+        transform: translateY(-2px);
+      }
+      .var-btn .vnum {
+        font-family: var(--font-head);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--accent);
+        display: block;
+        margin-bottom: 4px;
+      }
+      .var-btn .vtopic {
+        font-size: 10px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .start-all {
+        width: 100%;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem;
+        font-family: var(--font-head);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.05em;
+      }
+      .start-all:hover {
+        background: #9480ff;
+        transform: translateY(-1px);
+      }
+
+      /* ===== SETTINGS ===== */
+      #settings {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+      .settings-inner {
+        max-width: 480px;
+        width: 100%;
+        animation: fadeUp 0.4s ease forwards;
+      }
+      .settings-title {
+        font-family: var(--font-head);
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+      .settings-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 2rem;
+      }
+      .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 10px;
+      }
+      .setting-label {
+        font-size: 13px;
+      }
+      .setting-label small {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .toggle-wrap {
+        display: flex;
+        gap: 6px;
+      }
+      .toggle-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 5px 14px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .toggle-btn.on {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 1.5rem;
+      }
+      .btn-back {
+        flex: 1;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 0.85rem;
+        font-family: var(--font-body);
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-back:hover {
+        border-color: var(--muted);
+      }
+      .btn-start {
+        flex: 2;
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        border-radius: 12px;
+        padding: 0.85rem;
+        font-family: var(--font-head);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        letter-spacing: 0.04em;
+      }
+      .btn-start:hover {
+        background: #9480ff;
+      }
+
+      /* ===== QUIZ ===== */
+      #quiz {
+        padding: 0;
+        flex-direction: column;
+      }
+      .quiz-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .quiz-meta {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .quiz-meta strong {
+        color: var(--text);
+      }
+      .progress-bar {
+        flex: 1;
+        height: 3px;
+        background: var(--border);
+        border-radius: 99px;
+        margin: 0 1.5rem;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .score-pill {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 99px;
+        background: rgba(0, 229, 176, 0.12);
+        color: var(--accent2);
+        border: 1px solid rgba(0, 229, 176, 0.2);
+      }
+      .quiz-body {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2rem 1rem;
+      }
+      .question-card {
+        max-width: 640px;
+        width: 100%;
+        animation: fadeUp 0.35s ease forwards;
+      }
+      .q-number {
+        font-size: 10px;
+        color: var(--accent);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .q-text {
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        color: var(--text);
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .option-btn {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.9rem 1.1rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: rgba(124, 106, 255, 0.06);
+      }
+      .option-btn:disabled {
+        cursor: default;
+      }
+      .option-btn.correct {
+        border-color: var(--correct);
+        background: rgba(0, 229, 176, 0.08);
+        color: var(--correct);
+      }
+      .option-btn.wrong {
+        border-color: var(--wrong);
+        background: rgba(255, 85, 102, 0.08);
+        color: var(--wrong);
+      }
+      .option-btn.reveal {
+        border-color: rgba(0, 229, 176, 0.4);
+        background: rgba(0, 229, 176, 0.04);
+        color: rgba(0, 229, 176, 0.7);
+      }
+      .opt-label {
+        min-width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 1px;
+        transition: all 0.15s;
+      }
+      .correct .opt-label {
+        background: var(--correct);
+        border-color: var(--correct);
+        color: #000;
+      }
+      .wrong .opt-label {
+        background: var(--wrong);
+        border-color: var(--wrong);
+        color: #fff;
+      }
+      .reveal .opt-label {
+        border-color: rgba(0, 229, 176, 0.4);
+        color: rgba(0, 229, 176, 0.7);
+      }
+      .quiz-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+        display: flex;
+        justify-content: center;
+      }
+      .btn-next {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2.5rem;
+        font-family: var(--font-head);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        letter-spacing: 0.05em;
+        display: none;
+      }
+      .btn-next.show {
+        display: block;
+      }
+      .btn-next:hover {
+        background: #9480ff;
+      }
+
+      /* ===== RESULTS ===== */
+      #results {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+      .results-inner {
+        max-width: 560px;
+        width: 100%;
+        animation: fadeUp 0.5s ease forwards;
+      }
+      .grade-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        position: relative;
+      }
+      .grade-circle::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 1px solid rgba(124, 106, 255, 0.2);
+      }
+      .grade-num {
+        font-family: var(--font-head);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .results-title {
+        font-family: var(--font-head);
+        font-size: 1.4rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .results-sub {
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 2rem;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 1.5rem;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+      }
+      .stat-val {
+        font-family: var(--font-head);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .stat-val.g {
+        color: var(--correct);
+      }
+      .stat-val.b {
+        color: var(--wrong);
+      }
+      .stat-val.n {
+        color: var(--accent);
+      }
+      .stat-label {
+        font-size: 10px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .mistakes-list {
+        margin-bottom: 1.5rem;
+      }
+      .mistakes-title {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 0.75rem;
+      }
+      .mistake-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--wrong);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+      .mistake-q {
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .mistake-ans {
+        color: var(--correct);
+        font-size: 11px;
+      }
+      .results-btns {
+        display: flex;
+        gap: 10px;
+      }
+      .btn-retry {
+        flex: 1;
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        border-radius: 12px;
+        padding: 0.85rem;
+        font-family: var(--font-head);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-retry:hover {
+        background: #9480ff;
+      }
+      .btn-home-r {
+        flex: 1;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 0.85rem;
+        font-family: var(--font-body);
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-home-r:hover {
+        border-color: var(--muted);
+      }
+
+      /* ===== ADMIN ===== */
+      #admin {
+        padding: 1.5rem;
+        flex-direction: column;
+      }
+      .admin-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+      }
+      .admin-title {
+        font-family: var(--font-head);
+        font-size: 1.3rem;
+      }
+      .admin-subtitle {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        max-width: 900px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .admin-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem;
+      }
+      .admin-card h3 {
+        font-size: 13px;
+        font-family: var(--font-head);
+        margin-bottom: 1rem;
+        color: var(--accent);
+      }
+      .gen-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 1rem;
+      }
+      .gen-input {
+        flex: 1;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.65rem 0.9rem;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .gen-input:focus {
+        border-color: var(--accent);
+      }
+      .btn-gen {
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        border-radius: 8px;
+        padding: 0.65rem 1rem;
+        font-family: var(--font-head);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .btn-gen:hover {
+        background: #9480ff;
+      }
+      .keys-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .key-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.6rem 0.9rem;
+        margin-bottom: 6px;
+        gap: 8px;
+      }
+      .key-code {
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        color: var(--accent2);
+        font-weight: 600;
+      }
+      .key-meta {
+        font-size: 10px;
+        color: var(--muted);
+        text-align: right;
+        line-height: 1.4;
+      }
+      .key-status {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 99px;
+        font-weight: 600;
+      }
+      .key-status.active {
+        background: rgba(0, 229, 176, 0.12);
+        color: var(--correct);
+        border: 1px solid rgba(0, 229, 176, 0.2);
+      }
+      .key-status.used {
+        background: rgba(107, 107, 136, 0.15);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+      .btn-del {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0 4px;
+        transition: color 0.15s;
+        line-height: 1;
+      }
+      .btn-del:hover {
+        color: var(--wrong);
+      }
+      .users-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .user-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.6rem 0.9rem;
+        margin-bottom: 6px;
+      }
+      .user-item-name {
+        font-size: 13px;
+      }
+      .user-item-meta {
+        font-size: 10px;
+        color: var(--muted);
+        text-align: right;
+      }
+      .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 1rem;
+      }
+      .astat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.75rem;
+        text-align: center;
+      }
+      .astat-num {
+        font-family: var(--font-head);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .astat-label {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .col-full {
+        grid-column: 1 / -1;
+      }
+      .tg-link-card {
+        background: rgba(41, 182, 246, 0.06);
+        border: 1px solid rgba(41, 182, 246, 0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .tg-link-card .tg-icon2 {
+        font-size: 24px;
+      }
+      .tg-link-card p {
+        font-size: 12px;
+        color: var(--muted);
+        flex: 1;
+        line-height: 1.5;
+      }
+      .tg-link-card strong {
+        color: var(--text);
+      }
+      .empty-msg {
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted);
+        padding: 1.5rem;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @media (max-width: 600px) {
+        .variant-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .admin-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== LOGIN ===== -->
+    <div id="login" class="screen active">
+      <div class="login-box">
+        <div class="login-logo">
+          <div class="badge">ПМ04 · Astana IT University</div>
+          <h1>Тренажёр<br />по вопросам</h1>
+          <p>360 вопросов · 9 вариантов · HTML, CSS, JS, DevOps</p>
+        </div>
+
+        <div class="login-card">
+          <h2>🔑 Введи ключ доступа</h2>
+          <div class="field">
+            <label>Ключ</label>
+            <input
+              type="text"
+              id="keyInput"
+              placeholder="XXXX-XXXX-XXXX"
+              autocomplete="off"
+              oninput="formatKey(this)"
+            />
+            <div class="err-msg" id="keyErr">
+              Неверный или уже использованный ключ
+            </div>
+          </div>
+          <div class="field">
+            <label>Твоё имя</label>
+            <input type="text" id="nameInput" placeholder="Например: Айгерим" />
+            <div class="err-msg" id="nameErr">Введи своё имя</div>
+          </div>
+          <button class="btn-primary" onclick="loginWithKey()">Войти →</button>
+          <button class="btn-secondary" onclick="showAdminLogin()">
+            Вход для преподавателя
+          </button>
+        </div>
+
+        <div class="divider">Нет ключа? Напиши мне</div>
+
+        <a
+          class="tg-buy"
+          href="https://t.me/YOUR_TG_USERNAME"
+          target="_blank"
+          id="tgBuyLink"
+        >
+          <div class="tg-icon">✈️</div>
+          <div class="tg-info">
+            <div class="tg-title">Написать в Telegram</div>
+            <div class="tg-sub">Получить доступ к тренажёру · ПМ04</div>
+          </div>
+          <div class="tg-arrow">›</div>
+        </a>
+
+        <div class="login-footer">
+          Для студентов Astana IT University · 2 курс
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN LOGIN ===== -->
+    <div id="adminLogin" class="screen">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          padding: 1.5rem;
+        "
+      >
+        <div
+          style="
+            max-width: 380px;
+            width: 100%;
+            animation: fadeUp 0.4s ease forwards;
+          "
+        >
+          <div class="login-card">
+            <h2>🔐 Вход преподавателя</h2>
+            <div class="field">
+              <label>Пароль</label>
+              <input
+                type="password"
+                id="adminPassInput"
+                placeholder="Введи пароль"
+              />
+              <div class="err-msg" id="adminErr">Неверный пароль</div>
+            </div>
+            <button class="btn-primary" onclick="loginAdmin()">Войти</button>
+            <button class="btn-secondary" onclick="show('login')">
+              ← Назад
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HOME ===== -->
+    <div id="home" class="screen">
+      <div class="home-inner" style="margin: auto">
+        <div class="home-topbar">
+          <div class="user-info">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <div>
+              <div class="user-name" id="userName">Загрузка...</div>
+              <small
+                style="font-size: 10px; color: var(--muted)"
+                id="userKeyInfo"
+              ></small>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="logout()">Выйти</button>
+        </div>
+        <div class="badge">ПМ04 · Astana IT University</div>
+        <h1 class="home-title">Тренажёр<br />по вопросам</h1>
+        <p class="home-sub">
+          360 вопросов по HTML, CSS, JavaScript, React, Node.js,<br />CI/CD и
+          DevOps. Выбери вариант и начни тренировку.
+        </p>
+        <div class="variant-grid" id="variantGrid"></div>
+        <button class="start-all" onclick="openSettings('all')">
+          Все варианты подряд (360 вопросов)
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div id="settings" class="screen">
+      <div class="settings-inner">
+        <div class="settings-title" id="settingsTitle">Настройки</div>
+        <div class="settings-sub" id="settingsSub">
+          Выбери режим перед стартом
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">
+            Перемешать вопросы<small>Случайный порядок</small>
+          </div>
+          <div class="toggle-wrap">
+            <button
+              class="toggle-btn on"
+              id="shuffleQ"
+              onclick="toggle('shuffleQ')"
+            >
+              Да
+            </button>
+            <button
+              class="toggle-btn"
+              id="shuffleQ_no"
+              onclick="toggle('shuffleQ', true)"
+            >
+              Нет
+            </button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">
+            Перемешать ответы<small>Случайный порядок вариантов</small>
+          </div>
+          <div class="toggle-wrap">
+            <button
+              class="toggle-btn on"
+              id="shuffleA"
+              onclick="toggle('shuffleA')"
+            >
+              Да
+            </button>
+            <button
+              class="toggle-btn"
+              id="shuffleA_no"
+              onclick="toggle('shuffleA', true)"
+            >
+              Нет
+            </button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">
+            Показывать правильный<small>Если ответил неверно</small>
+          </div>
+          <div class="toggle-wrap">
+            <button
+              class="toggle-btn on"
+              id="showCorrect"
+              onclick="toggle('showCorrect')"
+            >
+              Да
+            </button>
+            <button
+              class="toggle-btn"
+              id="showCorrect_no"
+              onclick="toggle('showCorrect', true)"
+            >
+              Нет
+            </button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="goHome()">← Назад</button>
+          <button class="btn-start" onclick="startQuiz()">Начать →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== QUIZ ===== -->
+    <div id="quiz" class="screen">
+      <div class="quiz-header">
+        <div class="quiz-meta">
+          Вопрос <strong id="qCurrent">1</strong> из
+          <strong id="qTotal">40</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="score-pill" id="scorePill">0 / 0</div>
+      </div>
+      <div class="quiz-body">
+        <div class="question-card">
+          <div class="q-number" id="qLabel">Вариант 1 · Вопрос 1</div>
+          <div class="q-text" id="qText"></div>
+          <div class="options" id="options"></div>
+        </div>
+      </div>
+      <div class="quiz-footer">
+        <button class="btn-next" id="btnNext" onclick="nextQuestion()">
+          Следующий →
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== RESULTS ===== -->
+    <div id="results" class="screen">
+      <div class="results-inner">
+        <div class="grade-circle">
+          <div class="grade-num" id="gradeNum">0%</div>
+        </div>
+        <div class="results-title" id="resultsTitle">Результат</div>
+        <div class="results-sub" id="resultsSub"></div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val g" id="rCorrect">0</div>
+            <div class="stat-label">Верно</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val b" id="rWrong">0</div>
+            <div class="stat-label">Неверно</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val n" id="rPct">0%</div>
+            <div class="stat-label">Баллов</div>
+          </div>
+        </div>
+        <div class="mistakes-list" id="mistakesList"></div>
+        <div class="results-btns">
+          <button class="btn-retry" onclick="retryQuiz()">Повторить</button>
+          <button class="btn-home-r" onclick="goHome()">← Варианты</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN ===== -->
+    <div id="admin" class="screen">
+      <div style="max-width: 900px; margin: 0 auto; width: 100%">
+        <div class="admin-header">
+          <div>
+            <div class="admin-title">⚙️ Панель преподавателя</div>
+            <div class="admin-subtitle">Управление доступом к тренажёру</div>
+          </div>
+          <div style="display: flex; gap: 8px">
+            <button
+              class="btn-logout"
+              onclick="show('login')"
+              style="font-size: 12px; padding: 6px 14px"
+            >
+              Выйти
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <!-- Stats -->
+          <div class="admin-card col-full">
+            <div class="admin-stats">
+              <div class="astat">
+                <div class="astat-num" id="statTotal">0</div>
+                <div class="astat-label">Ключей всего</div>
+              </div>
+              <div class="astat">
+                <div class="astat-num" id="statActive">0</div>
+                <div class="astat-label">Активных</div>
+              </div>
+              <div class="astat">
+                <div class="astat-num" id="statUsed">0</div>
+                <div class="astat-label">Использовано</div>
+              </div>
+            </div>
+            <div class="tg-link-card">
+              <div class="tg-icon2">✈️</div>
+              <p>
+                Ссылка в Telegram для учеников:
+                <strong id="tgLinkDisplay">не задана</strong><br />Ученики пишут
+                тебе, ты даёшь им ключ.
+              </p>
+              <button
+                class="btn-gen"
+                onclick="changeTg()"
+                style="white-space: nowrap"
+              >
+                Изменить TG
+              </button>
+            </div>
+          </div>
+
+          <!-- Generate keys -->
+          <div class="admin-card">
+            <h3>Генерация ключей</h3>
+            <div class="gen-row">
+              <input
+                class="gen-input"
+                type="number"
+                id="genCount"
+                value="1"
+                min="1"
+                max="50"
+                placeholder="Кол-во"
+              />
+              <button class="btn-gen" onclick="generateKeys()">Создать</button>
+            </div>
+            <div id="newKeysList" style="margin-bottom: 0.75rem"></div>
+            <div style="font-size: 11px; color: var(--muted)">
+              Ключ можно использовать один раз. После активации он привязан к
+              имени ученика.
+            </div>
+          </div>
+
+          <!-- Change admin password -->
+          <div class="admin-card">
+            <h3>Изменить пароль админа</h3>
+            <div class="gen-row">
+              <input
+                class="gen-input"
+                type="password"
+                id="newAdminPass"
+                placeholder="Новый пароль"
+              />
+              <button class="btn-gen" onclick="changeAdminPassword()">
+                Изменить
+              </button>
+            </div>
+            <div
+              style="font-size: 11px; color: var(--muted); margin-top: 0.5rem"
+            >
+              Пароль должен быть не менее 6 символов.
+            </div>
+          </div>
+
+          <!-- Add user manually -->
+          <div class="admin-card">
+            <h3>Добавить пользователя вручную</h3>
+            <div class="gen-row">
+              <input
+                class="gen-input"
+                type="text"
+                id="newUserName"
+                placeholder="Имя пользователя"
+              />
+              <button class="btn-gen" onclick="addUserManually()">
+                Добавить
+              </button>
+            </div>
+            <div
+              style="font-size: 11px; color: var(--muted); margin-top: 0.5rem"
+            >
+              Пользователь будет добавлен без ключа доступа.
+            </div>
+          </div>
+
+          <!-- Key list -->
+          <div class="admin-card">
+            <h3>Все ключи</h3>
+            <div class="keys-list" id="keysList">
+              <div class="empty-msg">Нет ключей</div>
+            </div>
+          </div>
+
+          <!-- Users -->
+          <div class="admin-card col-full">
+            <h3>Активированные пользователи</h3>
+            <div class="users-list" id="usersList">
+              <div class="empty-msg">Нет активированных пользователей</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // CONFIG — поменяй это!
+      // ============================================================
+      const API_BASE = window.location.origin; // Автоматически определяет URL сервера
+      const ADMIN_PASSWORD = "admin123"; // ← СМЕНИ ПАРОЛЬ! (теперь хранится на сервере)
+      const TG_DEFAULT = "YOUR_TG_USERNAME"; // ← СМЕНИ НА СВОЙ ТГ!
+
+      // ============================================================
+      // STORAGE HELPERS (теперь через API)
+      // ============================================================
+      async function getDB() {
+        try {
+          const response = await fetch(`${API_BASE}/api/keys`);
+          const keys = await response.json();
+          const usersResponse = await fetch(`${API_BASE}/api/users`);
+          const users = await usersResponse.json();
+          return { keys, users };
+        } catch (e) {
+          console.error("Error loading data:", e);
+          return { keys: [], users: [] };
+        }
+      }
+
+      async function saveDB(db) {
+        // Данные теперь сохраняются автоматически через API
+        console.log("Data saved via API");
+      }
+
+      async function initDB() {
+        // Теперь данные загружаются с сервера
+        return await getDB();
+      }
+
+      // ============================================================
+      // AUTH
+      // ============================================================
+      let currentUser = null;
+
+      async function loginWithKey() {
+        const key = document
+          .getElementById("keyInput")
+          .value.trim()
+          .toUpperCase();
+        const name = document.getElementById("nameInput").value.trim();
+        let ok = true;
+
+        document.getElementById("keyErr").classList.remove("show");
+        document.getElementById("nameErr").classList.remove("show");
+        document.getElementById("keyInput").classList.remove("error");
+        document.getElementById("nameInput").classList.remove("error");
+
+        if (!name) {
+          document.getElementById("nameErr").classList.add("show");
+          document.getElementById("nameInput").classList.add("error");
+          ok = false;
+        }
+
+        if (!key) {
+          document.getElementById("keyErr").textContent = "Введите ключ";
+          document.getElementById("keyErr").classList.add("show");
+          document.getElementById("keyInput").classList.add("error");
+          ok = false;
+        }
+
+        if (!ok) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/keys/activate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: key, name }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            document.getElementById("keyErr").textContent = result.error;
+            document.getElementById("keyErr").classList.add("show");
+            document.getElementById("keyInput").classList.add("error");
+            return;
+          }
+
+          currentUser = result.user;
+          sessionStorage.setItem("pm04_session", JSON.stringify(currentUser));
+          enterApp();
+        } catch (error) {
+          console.error("Login error:", error);
+          document.getElementById("keyErr").textContent = "Ошибка подключения";
+          document.getElementById("keyErr").classList.add("show");
+        }
+      }
+
+      function showAdminLogin() {
+        show("adminLogin");
+      }
+
+      async function loginAdmin() {
+        const pass = document.getElementById("adminPassInput").value;
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: pass }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            document.getElementById("adminPassInput").value = "";
+            document.getElementById("adminErr").classList.remove("show");
+            loadAdminPanel();
+            show("admin");
+          } else {
+            document.getElementById("adminErr").textContent =
+              result.error || "Неверный пароль";
+            document.getElementById("adminErr").classList.add("show");
+          }
+        } catch (error) {
+          console.error("Admin login error:", error);
+          document.getElementById("adminErr").textContent =
+            "Ошибка подключения";
+          document.getElementById("adminErr").classList.add("show");
+        }
+      }
+
+      function logout() {
+        sessionStorage.removeItem("pm04_session");
+        currentUser = null;
+        show("login");
+      }
+
+      function checkSession() {
+        try {
+          const s = sessionStorage.getItem("pm04_session");
+          if (s) {
+            currentUser = JSON.parse(s);
+            enterApp();
+            return true;
+          }
+        } catch {}
+        return false;
+      }
+
+      function enterApp() {
+        document.getElementById("userAvatar").textContent = (currentUser.name ||
+          "?")[0].toUpperCase();
+        document.getElementById("userName").textContent = currentUser.name;
+        document.getElementById("userKeyInfo").textContent =
+          "Ключ: " + currentUser.key;
+        buildHome();
+        show("home");
+      }
+
+      // ============================================================
+      // KEY FORMAT
+      // ============================================================
+      function formatKey(input) {
+        let v = input.value
+          .replace(/[^A-Za-z0-9]/g, "")
+          .toUpperCase()
+          .slice(0, 12);
+        let parts = [];
+        for (let i = 0; i < v.length; i += 4) parts.push(v.slice(i, i + 4));
+        input.value = parts.join("-");
+      }
+
+      function generateKeyString() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let key = "";
+        for (let g = 0; g < 3; g++) {
+          if (g > 0) key += "-";
+          for (let i = 0; i < 4; i++)
+            key += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return key;
+      }
+
+      // ============================================================
+      // ADMIN PANEL
+      // ============================================================
+      async function loadAdminPanel() {
+        try {
+          // Load stats
+          const statsResponse = await fetch(`${API_BASE}/api/stats`);
+          const stats = await statsResponse.json();
+
+          document.getElementById("statTotal").textContent = stats.totalKeys;
+          document.getElementById("statActive").textContent = stats.activeKeys;
+          document.getElementById("statUsed").textContent = stats.usedKeys;
+
+          // Load keys
+          const keysResponse = await fetch(`${API_BASE}/api/keys`);
+          const keys = await keysResponse.json();
+
+          const kl = document.getElementById("keysList");
+          if (keys.length === 0) {
+            kl.innerHTML = '<div class="empty-msg">Нет ключей</div>';
+          } else {
+            kl.innerHTML = keys
+              .sort((a, b) => (a.used ? 1 : 0) - (b.used ? 1 : 0))
+              .map(
+                (k) => `
+      <div class="key-item">
+        <span class="key-code">${k.code}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${
+            k.used
+              ? `<div class="key-meta">${k.used_by}<br>${k.used_at}</div><span class="key-status used">Использован</span>`
+              : `<span class="key-status active">Активен</span>`
+          }
+          ${!k.used ? `<button class="btn-del" onclick="deleteKey('${k.code}')" title="Удалить">×</button>` : ""}
+        </div>
+      </div>`,
+              )
+              .join("");
+          }
+
+          // Load users
+          const usersResponse = await fetch(`${API_BASE}/api/users`);
+          const users = await usersResponse.json();
+
+          const ul = document.getElementById("usersList");
+          if (users.length === 0) {
+            ul.innerHTML =
+              '<div class="empty-msg">Нет активированных пользователей</div>';
+          } else {
+            ul.innerHTML = users
+              .map(
+                (u) => `
+      <div class="user-item">
+        <div>
+          <div class="user-item-name">👤 ${u.name}</div>
+        </div>
+        <div class="user-item-meta">Ключ: ${u.key_code}<br>${u.activated_at}</div>
+        <button class="btn-del" onclick="deleteUser('${u.name}')" title="Удалить пользователя">×</button>
+      </div>`,
+              )
+              .join("");
+          }
+        } catch (error) {
+          console.error("Error loading admin panel:", error);
+          alert("Ошибка загрузки данных");
+        }
+      }
+
+      async function generateKeys() {
+        const count = Math.min(
+          50,
+          Math.max(1, parseInt(document.getElementById("genCount").value) || 1),
+        );
+
+        try {
+          const response = await fetch(`${API_BASE}/api/keys/generate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ count }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            const el = document.getElementById("newKeysList");
+            el.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem;margin-bottom:0.5rem;">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.1em;">Новые ключи — скопируй и отправь ученику</div>
+      ${result.keys.map((k) => `<div style="font-family:var(--font-body);font-size:14px;color:var(--accent2);font-weight:600;letter-spacing:0.1em;padding:3px 0;">${k}</div>`).join("")}
+    </div>`;
+            loadAdminPanel();
+          } else {
+            alert("Ошибка генерации ключей: " + result.error);
+          }
+        } catch (error) {
+          console.error("Generate keys error:", error);
+          alert("Ошибка подключения");
+        }
+      }
+
+      async function deleteKey(key) {
+        if (!confirm("Удалить ключ " + key + "?")) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/keys/${key}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            loadAdminPanel();
+            document.getElementById("newKeysList").innerHTML = "";
+          } else {
+            const result = await response.json();
+            alert("Ошибка удаления: " + result.error);
+          }
+        } catch (error) {
+          console.error("Delete key error:", error);
+          alert("Ошибка подключения");
+        }
+      }
+
+      function changeTg() {
+        const tg = prompt("Введи твой Telegram username (без @):");
+        if (tg && tg.trim()) {
+          const db = initDB();
+          db.tg = tg.trim().replace("@", "");
+          saveDB(db);
+          loadAdminPanel();
+          document.getElementById("tgBuyLink").href = "https://t.me/" + db.tg;
+        }
+      }
+
+      async function changeAdminPassword() {
+        const newPass = document.getElementById("newAdminPass").value.trim();
+        if (newPass.length < 6) {
+          alert("Пароль должен быть не менее 6 символов!");
+          return;
+        }
+        if (!confirm("Изменить пароль админа на: " + newPass + "?")) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/admin/password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ newPassword: newPass }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            document.getElementById("newAdminPass").value = "";
+            alert("Пароль админа изменён!");
+          } else {
+            alert("Ошибка: " + result.error);
+          }
+        } catch (error) {
+          console.error("Change password error:", error);
+          alert("Ошибка подключения");
+        }
+      }
+
+      async function addUserManually() {
+        const name = document.getElementById("newUserName").value.trim();
+        if (!name) {
+          alert("Введите имя пользователя!");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/api/users`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            document.getElementById("newUserName").value = "";
+            loadAdminPanel();
+            alert("Пользователь '" + name + "' добавлен!");
+          } else {
+            alert("Ошибка: " + result.error);
+          }
+        } catch (error) {
+          console.error("Add user error:", error);
+          alert("Ошибка подключения");
+        }
+      }
+
+      async function deleteUser(name) {
+        if (!confirm("Удалить пользователя '" + name + "'?")) return;
+
+        try {
+          const response = await fetch(`${API_BASE}/api/users/${name}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            loadAdminPanel();
+          } else {
+            const result = await response.json();
+            alert("Ошибка удаления: " + result.error);
+          }
+        } catch (error) {
+          console.error("Delete user error:", error);
+          alert("Ошибка подключения");
+        }
+      }
+
+      // ============================================================
+      // QUIZ DATA
+      // ============================================================
+      const VARIANTS = [
+        {
+          title: "Вариант 1",
+          topic: "HTML5 & CSS адаптивный дизайн",
+          questions: [
+            {
+              q: "Какой вариант правильно описывает семантическую структуру HTML-документа:",
+              opts: [
+                "<div> является универсальным контейнером для всего контента",
+                "<span> используется как основной тег",
+                "<section> используется только для оформления внешнего вида",
+                "<header>, <main>, <footer> логически разделяют содержимое",
+                "<b> является основным семантическим элементом",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Основная цель декларации DOCTYPE:",
+              opts: [
+                "Определяет механизм подключения CSS-файлов",
+                "Инструмент для управления JavaScript",
+                "Запускает синтаксис для сокращения HTML-тегов",
+                "Очищает кэш браузера",
+                "Сообщает браузеру, какому стандарту HTML соответствует документ",
+              ],
+              ans: 4,
+            },
+            {
+              q: "В каком случае тег <article> используется правильно:",
+              opts: [
+                "Для группировки навигационного меню",
+                "Для изменения стиля страницы",
+                "Для независимого смыслового блока контента",
+                "Как контейнер для JavaScript",
+                "Для структурирования форм",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Суть каскадности CSS:",
+              opts: [
+                "Стили применяются случайно",
+                "Учитываются только внешние CSS-файлы",
+                "Применяются только inline-стили",
+                "Определяется приоритет стилей и выбирается применяемый",
+                "CSS-код выполняется один раз",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Особенность inline-стиля:",
+              opts: [
+                "Имеет самый низкий приоритет",
+                "Записывается только во внешнем CSS-файле",
+                "Применяется ко всем элементам сразу",
+                "Используется только внутри media query",
+                "Имеет самый высокий приоритет",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Основная функция тега <nav>:",
+              opts: [
+                "Хранение основного контента",
+                "Отображение изображений",
+                "Контейнер для JavaScript",
+                "Обработка форм",
+                "Группирует навигационные ссылки",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Правильный порядок приоритета CSS (specificity):",
+              opts: [
+                "class > id",
+                "element > id",
+                "inline-стили имеют низкий приоритет",
+                "inline > id > class > element",
+                "id < class",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Для чего используется тег <main>:",
+              opts: [
+                "Для CSS-стилей",
+                "Для навигационных элементов",
+                "Контейнер для JavaScript",
+                "Отображает основной контент страницы",
+                "Для загрузки файлов",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Основная цель Flexbox:",
+              opts: [
+                "Изменение размера изображений",
+                "Изменение HTML-структуры",
+                "Система для JavaScript",
+                "Гибкое размещение и управление выравниванием",
+                "Хранение файлов",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Свойство display: none:",
+              opts: [
+                "Делает элемент видимым",
+                "Изменяет только цвет",
+                "Сохраняет место, но скрывает",
+                "Полностью удаляет элемент из потока документа",
+                "Добавляет анимацию",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Разница между <section> и <div>:",
+              opts: [
+                "Нет различий",
+                "<div> обладает семантической значимостью",
+                "<section> только для оформления",
+                "<div> только для текста",
+                "<section> — смысловой раздел, <div> — нейтральный контейнер",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Для чего используется media query:",
+              opts: [
+                "Для JavaScript",
+                "Для изменения HTML",
+                "Для связи с сервером",
+                "Для изменения стилей по размеру экрана",
+                "Для хранения файлов",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Основной принцип responsive-дизайна:",
+              opts: [
+                "Одинаковый интерфейс для всех",
+                "Только desktop",
+                "Только мобильные",
+                "Гибкий дизайн под разные экраны",
+                "Только CSS Grid",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Для чего нужен meta viewport:",
+              opts: [
+                "Подключение CSS",
+                "Выполнение JavaScript",
+                "Проверка HTML",
+                "Управление масштабом и адаптация на мобильных",
+                "Только для SEO",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Особенность position: absolute:",
+              opts: [
+                "Остаётся в нормальном потоке",
+                "Только внутри body",
+                "Позиционируется относительно ближайшего позиционированного родителя",
+                "Только внутри flex",
+                "Нельзя изменить положение",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Преимущество Grid layout:",
+              opts: [
+                "Только в одном направлении",
+                "Только для inline-элементов",
+                "Двумерная разметка",
+                "Требует JavaScript",
+                "Только для мобильных",
+              ],
+              ans: 2,
+            },
+            {
+              q: "На что влияет z-index:",
+              opts: [
+                "Изменяет цвет",
+                "Изменяет размер",
+                "Изменяет шрифт",
+                "Определяет порядок наложения элементов",
+                "Управляет анимациями",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Преимущество Semantic HTML:",
+              opts: [
+                "Увеличивает объём кода",
+                "Снижает скорость загрузки",
+                "Улучшает SEO и accessibility",
+                "Делает CSS ненужным",
+                "Исключает JavaScript",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Разница между rem и em:",
+              opts: [
+                "Одинаковые",
+                "rem — от родителя, em — независим",
+                "em — от корневого, rem — от родителя",
+                "rem — от корневого, em — от родителя",
+                "Используется только px",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Эффект свойства overflow: hidden:",
+              opts: [
+                "Увеличивает контент",
+                "Добавляет прокрутку",
+                "Скрывает контент за пределами контейнера",
+                "Перемещает контент",
+                "Изменяет цвет",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Направление по умолчанию для display: flex:",
+              opts: [
+                "column",
+                "reverse",
+                "двумерная разметка",
+                "Скрывает элементы",
+                "row — элементы в строку",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Тег <aside>:",
+              opts: [
+                "Основной контент",
+                "Контейнер для JavaScript",
+                "Дополнительная информация или боковая панель",
+                "Хранение CSS",
+                "Создание форм",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Что такое CSS inheritance:",
+              opts: [
+                "Стили удаляются",
+                "Полное копирование стилей",
+                "Выполнение JavaScript",
+                "Передача стилей от родителя к дочерним",
+                "Обновление HTML",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Для чего используется max-width:",
+              opts: [
+                "Минимальная ширина",
+                "Изменение высоты",
+                "Ограничивает максимальную ширину",
+                "Изменение цвета",
+                "Анимации",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Подход Mobile-first:",
+              opts: [
+                "Сначала desktop",
+                "Только HTML без CSS",
+                "Сначала мобильный, затем большие экраны",
+                "Только JavaScript",
+                "Отказ от Grid",
+              ],
+              ans: 2,
+            },
+            {
+              q: "<figure> и <figcaption>:",
+              opts: [
+                "Для JavaScript",
+                "Для CSS",
+                "Изображение и его описание",
+                "Для форм",
+                "Для навигации",
+              ],
+              ans: 2,
+            },
+            {
+              q: "position: fixed:",
+              opts: [
+                "Двигается при прокрутке",
+                "Фиксируется и не двигается при прокрутке",
+                "Только в flex",
+                "Только в grid",
+                "Элемент удаляется",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Для чего нужен CSS reset:",
+              opts: [
+                "Подключение JavaScript",
+                "Изменение HTML",
+                "Удаление стандартных стилей браузера",
+                "Сжатие кода",
+                "Для SEO",
+              ],
+              ans: 2,
+            },
+            {
+              q: "<footer>:",
+              opts: [
+                "Основной раздел с контентом",
+                "Контейнер для навигации",
+                "Нижняя информационная часть страницы",
+                "Для JavaScript",
+                "Для CSS",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Единица измерения vh:",
+              opts: [
+                "Равна пикселям",
+                "Аналогична em",
+                "Работает как rem",
+                "От высоты экрана",
+                "Зависит от контента",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Что такое breakpoint:",
+              opts: [
+                "Функция JavaScript",
+                "Ошибка CSS",
+                "HTML-тег",
+                "Точка изменения стилей по размеру экрана",
+                "Размер файла",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Назначение flex-wrap: wrap:",
+              opts: [
+                "Удаляет элементы",
+                "Держит в одной строке",
+                "Изменяет цвет",
+                "Переносит элементы на следующую строку",
+                "Изменяет высоту",
+              ],
+              ans: 3,
+            },
+            {
+              q: "HTML-структура navigation bar:",
+              opts: [
+                "<div><p>link</p></div>",
+                "<span><a></a></span>",
+                "<section><img></section>",
+                "<header><div></div></header>",
+                "<nav><ul><li><a></a></li></ul></nav>",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Когда используется hamburger menu:",
+              opts: [
+                "На desktop",
+                "Только на сервере",
+                "При печати",
+                "На маленьких экранах",
+                "Только без CSS",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Цель min-width:",
+              opts: [
+                "Ограничивает максимальную ширину",
+                "Управляет высотой",
+                "Изменяет цвет",
+                "Минимальная ширина, ограничивает сжатие",
+                "Анимации",
+              ],
+              ans: 3,
+            },
+            {
+              q: "grid-template-columns: repeat(3, 1fr) означает:",
+              opts: [
+                "Колонки по 3px",
+                "Одна колонка",
+                "Три равные колонки",
+                "Три строки",
+                "Удаляет колонки",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Особенность sticky navigation:",
+              opts: [
+                "Как absolute",
+                "Исчезает при прокрутке",
+                "Как fixed",
+                "Фиксируется при достижении точки",
+                "Устаревший метод",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Mobile-first media query записывается через:",
+              opts: [
+                "max-width",
+                "Только JavaScript",
+                "Только HTML",
+                "min-width",
+                "Только inline-стили",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Что делает overflow-x: auto:",
+              opts: [
+                "Скрывает контент",
+                "Управляет высотой",
+                "Отключает прокрутку",
+                "Горизонтальная прокрутка при необходимости",
+                "Изменяет цвет",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Основная цель адаптивной навигации:",
+              opts: [
+                "Уменьшение кода",
+                "Убирает JavaScript",
+                "Только SEO",
+                "Только оформление",
+                "Удобная навигация на разных устройствах",
+              ],
+              ans: 4,
+            },
+          ],
+        },
+        {
+          title: "Вариант 2",
+          topic: "JavaScript основы",
+          questions: [
+            {
+              q: "Как правильно объявить переменную в JavaScript?",
+              opts: [
+                "let x = 10;",
+                "variable x = 10;",
+                "define x = 10;",
+                "int x := 10;",
+                "var: x = 10;",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Что относится к типу 'string' в JavaScript?",
+              opts: ["true", '"Hello World"', "null", "undefined", "12345"],
+              ans: 1,
+            },
+            {
+              q: "Каков результат typeof null?",
+              opts: ["object", "null", "string", "boolean", "undefined"],
+              ans: 0,
+            },
+            {
+              q: "Какой оператор проверяет равенство и тип одновременно?",
+              opts: ["=", "==", "===", "!=", "<>"],
+              ans: 2,
+            },
+            {
+              q: "Что в JavaScript является значением false (falsy)?",
+              opts: ['"0"', "[]", "{}", "0", '"false"'],
+              ans: 3,
+            },
+            {
+              q: "В чем разница между let и var?",
+              opts: [
+                "let имеет блочную область видимости",
+                "var работает только внутри функции",
+                "var работает только в блоке",
+                "let работает только глобально",
+                "let используется только с const",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Как объявляется массив в JavaScript?",
+              opts: [
+                "array = {}",
+                "arr = <>",
+                "let arr = []",
+                "list = ()",
+                "array = set()",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Когда появляется undefined?",
+              opts: [
+                "Когда переменная строка",
+                "Когда переменной не присвоено значение",
+                "Когда переменная null",
+                "Когда переменная булевая",
+                "Когда переменная число",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что такое NaN?",
+              opts: [
+                "Not a Name",
+                "Not a Number",
+                "Negative and Null",
+                "Null and Number",
+                "New assigned Number",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Верное утверждение о const:",
+              opts: [
+                "Можно изменить",
+                "Автоматически число",
+                "Можно переобъявить",
+                "Только внутри функции",
+                "Значение не изменяется",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Какой оператор является условным в JavaScript?",
+              opts: ["if", "loop", "repeat", "while", "switcher"],
+              ans: 0,
+            },
+            {
+              q: "Блок, который выполняется, если условие не выполнено:",
+              opts: ["else", "if", "else if", "condition", "else if else"],
+              ans: 0,
+            },
+            {
+              q: "Когда останавливается цикл while?",
+              opts: [
+                "Когда переменная удаляется",
+                "Когда условие false",
+                "Когда код заканчивается",
+                "Когда массив кончается",
+                "Когда вызывается функция",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Правильный синтаксис цикла for:",
+              opts: [
+                "for(i<10;i++)",
+                "for(let i=0; i<10; i++)",
+                "loop(i=0;i<10;i++)",
+                "for i=0 to 10",
+                "for(i=0;i<10)",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что делает оператор break?",
+              opts: [
+                "Продолжает выполнение",
+                "Запускает цикл",
+                "Удаляет переменную",
+                "Останавливает цикл",
+                "Вызывает функцию",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Оператор continue:",
+              opts: [
+                "Завершает цикл",
+                "Переходит к следующей итерации",
+                "Удаляет переменную",
+                "Останавливает выполнение",
+                "Закрывает функцию",
+              ],
+              ans: 1,
+            },
+            {
+              q: "default в switch:",
+              opts: [
+                "Объявление переменной",
+                "Написание функции",
+                "Выполняется если ни один case не подошёл",
+                "Создание массива",
+                "Создание цикла",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Особенность do...while:",
+              opts: [
+                "Никогда не выполняется",
+                "Выполняется хотя бы один раз",
+                "Только для массивов",
+                "Условие проверяется заранее",
+                "Несколько условий",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Определение функции:",
+              opts: [
+                "define myFunc()",
+                "function myFunc()",
+                "method myFunc()",
+                "func myFunc()",
+                "function:myFunc()",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Arrow function:",
+              opts: [
+                "() => {}",
+                "func => ()",
+                "function => ()",
+                "-> ()",
+                "=> function()",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Вызов функции:",
+              opts: [
+                "test:function()",
+                "call test",
+                "test()",
+                "function test",
+                "test = function",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Оператор return:",
+              opts: [
+                "Повторяет код",
+                "Продолжает выполнение",
+                "Возвращает значение",
+                "Удаляет переменную",
+                "Запускает цикл",
+              ],
+              ans: 2,
+            },
+            {
+              q: "addEventListener:",
+              opts: [
+                "Создаёт HTML",
+                "Изменяет CSS",
+                "Обрабатывает события",
+                "Объявляет переменную",
+                "Читает файл",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Событие click:",
+              opts: [
+                "При нажатии клавиши",
+                "При прокрутке",
+                "При движении мыши",
+                "При нажатии на элемент",
+                "При загрузке",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Что такое DOM?",
+              opts: [
+                "Data Object Model",
+                "Document Object Model",
+                "Dynamic Object Method",
+                "Data Oriented Map",
+                "Document Oriented Module",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Как получить доступ к свойству объекта?",
+              opts: [
+                "obj->prop",
+                "obj.prop",
+                "obj::prop",
+                "obj:prop",
+                "obj[prop()]",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Как получить свойство объекта динамически?",
+              opts: [
+                "obj.prop",
+                'obj["prop"]',
+                "obj:prop",
+                "obj->prop",
+                "obj::prop",
+              ],
+              ans: 1,
+            },
+            {
+              q: "На какой структуре основан JSON?",
+              opts: [
+                "Синтаксис HTML",
+                "Правила CSS",
+                "Пары ключ-значение",
+                "Бинарная структура",
+                "Набор функций",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Что делает JSON.parse()?",
+              opts: [
+                "Объект в строку",
+                "Удаляет переменную",
+                "Создаёт HTML",
+                "Преобразует JSON-текст в объект",
+                "Добавляет CSS",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Что делает JSON.stringify()?",
+              opts: [
+                "JSON в массив",
+                "В функцию",
+                "Объект в строку JSON",
+                "Создаёт DOM",
+                "В число",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Когда срабатывает событие submit у формы?",
+              opts: [
+                "При прокрутке",
+                "При нажатии клавиши",
+                "При закрытии страницы",
+                "При движении курсора",
+                "При отправке формы",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Для чего используется preventDefault()?",
+              opts: [
+                "Изменяет HTML",
+                "Удаляет CSS",
+                "Сохраняет переменную",
+                "Останавливает действие по умолчанию",
+                "Выполняет API-запрос",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Что возвращает event.target?",
+              opts: [
+                "Все элементы",
+                "DOM-дерево",
+                "Элемент на котором произошло событие",
+                "CSS-стиль",
+                "Функцию",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Что делает classList.add()?",
+              opts: [
+                "Удаляет класс",
+                "Удаляет DOM-элемент",
+                "Добавляет переменную",
+                "Вызывает функцию",
+                "Добавляет класс",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Что делает classList.remove()?",
+              opts: [
+                "Удаляет элемент",
+                "Создаёт CSS",
+                "Изменяет HTML",
+                "Добавляет атрибут",
+                "Удаляет класс",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Как определяется объект в JavaScript?",
+              opts: [
+                "let obj = []",
+                "let obj = ()",
+                "let obj = <>",
+                "let obj = newArray()",
+                "let obj = {}",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Метод для получения DOM-элемента по id:",
+              opts: [
+                "findElement()",
+                "getNode()",
+                "select()",
+                "query()",
+                "getElementById()",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Что делает querySelector?",
+              opts: [
+                "Только id",
+                "Только class",
+                "Только тег",
+                "Все элементы",
+                "Находит элемент по CSS-селектору",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Для чего используется innerHTML?",
+              opts: [
+                "Изменяет CSS",
+                "Сохраняет переменную",
+                "Читает файл",
+                "Отправляет запрос",
+                "Изменяет HTML-содержимое",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Свойство value относится к:",
+              opts: ["div", "span", "body", "script", "input"],
+              ans: 4,
+            },
+          ],
+        },
+        {
+          title: "Вариант 3",
+          topic: "DOM, события, localStorage",
+          questions: [
+            {
+              q: "Основное различие между innerText и innerHTML:",
+              opts: [
+                "innerText управляет CSS",
+                "innerHTML считывает HTML-код и позволяет изменять",
+                "Работают одинаково",
+                "innerHTML обрабатывает только текст",
+                "innerText интерпретирует теги",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Основная цель метода setAttribute:",
+              opts: [
+                "Добавляет атрибут или изменяет существующий",
+                "Изменяет CSS",
+                "Хранит переменные JavaScript",
+                "Удаляет элементы из DOM",
+                "Определяет функции",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Что возвращает getAttribute:",
+              opts: [
+                "DOM-объект",
+                "Значение атрибута в виде строки",
+                "CSS-стили",
+                "JavaScript-функцию",
+                "Массив значений",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция метода createElement():",
+              opts: [
+                "Объявляет переменную",
+                "Удаляет элементы",
+                "Создаёт новый HTML-элемент в DOM",
+                "Генерирует CSS",
+                "Отправляет API-запросы",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Основная функция appendChild():",
+              opts: [
+                "Изменяет стиль",
+                "Добавляет элемент в конец выбранного",
+                "Объединяет переменные",
+                "Вызывает функцию",
+                "Удаляет элемент",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что делает removeChild():",
+              opts: [
+                "Изменяет CSS",
+                "Удаляет дочерний элемент",
+                "Удаляет переменные",
+                "Перестраивает HTML",
+                "Добавляет класс",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Основная цель валидации формы:",
+              opts: [
+                "Уменьшение HTML-кода",
+                "Проверка корректности данных пользователя",
+                "Улучшение CSS",
+                "Связь с сервером",
+                "Управление файлами",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция атрибута required:",
+              opts: [
+                "Определяет переменные",
+                "Требует обязательного заполнения поля",
+                "Добавляет CSS",
+                "Изменяет DOM",
+                "Запускает API",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция атрибута pattern:",
+              opts: [
+                "Определяет HTML-теги",
+                "Проверяет значение регулярным выражением",
+                "Управляет CSS",
+                "Определяет функции",
+                "Вызывает API",
+              ],
+              ans: 1,
+            },
+            {
+              q: 'Что проверяет input type="email":',
+              opts: [
+                "Числовые значения",
+                "Формат email",
+                "Корректность URL",
+                "Структуру JSON",
+                "CSS-стили",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Правильный способ регистрации события:",
+              opts: [
+                "addClick()",
+                "listen()",
+                "addEventListener()",
+                "onClick() для CSS",
+                "clickEvent()",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Когда срабатывает onchange:",
+              opts: [
+                "При нажатии клавиши",
+                "Когда значение изменилось и элемент потерял фокус",
+                "При загрузке страницы",
+                "При прокрутке",
+                "При движении курсора",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Характеристика события keydown:",
+              opts: [
+                "Только кнопка мыши",
+                "Срабатывает при нажатии клавиши",
+                "Только при прокрутке",
+                "При изменении CSS",
+                "Только при submit",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Для чего используется localStorage:",
+              opts: [
+                "Изменение HTML",
+                "Длительное хранение данных в браузере",
+                "Только CSS",
+                "API-запросы",
+                "DOM-элементы",
+              ],
+              ans: 1,
+            },
+            {
+              q: "localStorage.setItem():",
+              opts: [
+                "Создаёт DOM",
+                "Устанавливает CSS",
+                "Сохраняет данные ключ-значение",
+                "Выполняет API",
+                "Удаляет данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Что возвращает localStorage.getItem():",
+              opts: [
+                "HTML-код",
+                "Сохранённое значение в виде строки",
+                "CSS-значения",
+                "DOM-объект",
+                "Функцию",
+              ],
+              ans: 1,
+            },
+            {
+              q: "localStorage.clear():",
+              opts: [
+                "Удаляет один элемент",
+                "Удаляет все данные в браузере",
+                "Изменяет CSS",
+                "Перестраивает DOM",
+                "Добавляет API",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Разница между null и undefined:",
+              opts: [
+                "undefined — без значения, null — намеренно пустое значение",
+                "Одинаковы",
+                "Оба string",
+                "Оба number",
+                "undefined — всегда объект",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Результат typeof NaN:",
+              opts: ["NaN", "number", "string", "object", "undefined"],
+              ans: 1,
+            },
+            {
+              q: 'Результат parseInt("10px"):',
+              opts: ['Строка "10px"', "0", "10", "NaN", "undefined"],
+              ans: 2,
+            },
+            {
+              q: 'Результат parseFloat("10.5px"):',
+              opts: ["0", "NaN", "10.5", 'Строка "10.5"', "undefined"],
+              ans: 2,
+            },
+            {
+              q: 'Результат isNaN("abc"):',
+              opts: [
+                "false",
+                "true — не является числом",
+                "Строка NaN",
+                "undefined",
+                "0",
+              ],
+              ans: 1,
+            },
+            {
+              q: 'Результат Number("123"):',
+              opts: [
+                'Строка "123"',
+                "Число 123",
+                "NaN",
+                "undefined",
+                "boolean",
+              ],
+              ans: 1,
+            },
+            {
+              q: 'Результат Boolean(""):',
+              opts: [
+                "Строка false",
+                "false — строка пустая",
+                "true",
+                "null",
+                "undefined",
+              ],
+              ans: 1,
+            },
+            {
+              q: 'Результат Boolean("text"):',
+              opts: [
+                "null",
+                "true — значение существует",
+                "false",
+                "0",
+                "undefined",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что не является циклом:",
+              opts: [
+                "while",
+                "if — оператор условия, не цикл",
+                "for",
+                "do...while",
+                "forEach",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Где используется forEach:",
+              opts: [
+                "В HTML",
+                "Для обработки элементов массива",
+                "Для CSS",
+                "В API",
+                "В объектах",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что возвращает map():",
+              opts: ["undefined", "Новый массив", "object", "null", "boolean"],
+              ans: 1,
+            },
+            {
+              q: "Функция filter():",
+              opts: [
+                "Одно значение",
+                "Новый массив с элементами по условию",
+                "CSS",
+                "Удаляет HTML",
+                "Объект",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что делает reduce():",
+              opts: [
+                "CSS",
+                "Объединяет элементы в один результат",
+                "DOM",
+                "HTML",
+                "Удаляет функции",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция setTimeout:",
+              opts: [
+                "API-запрос",
+                "Выполняет код один раз через заданное время",
+                "Создаёт цикл",
+                "Изменяет CSS",
+                "Удаляет переменную",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что делает setInterval:",
+              opts: [
+                "Один раз",
+                "Повторно выполняет через интервалы",
+                "Удаляет функцию",
+                "Создаёт DOM",
+                "Изменяет переменную",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция clearInterval:",
+              opts: [
+                "Создаёт DOM",
+                "Останавливает интервал",
+                "Удаляет CSS",
+                "Добавляет API",
+                "Сохраняет переменную",
+              ],
+              ans: 1,
+            },
+            {
+              q: "document.readyState показывает:",
+              opts: [
+                "Ошибки JavaScript",
+                "Состояние загрузки документа",
+                "Состояние CSS",
+                "HTML-код",
+                "API-ответ",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Когда срабатывает window.onload:",
+              opts: [
+                "При запуске JavaScript",
+                "После полной загрузки всех ресурсов",
+                "При загрузке CSS",
+                "При API",
+                "При изменении DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Что возвращает querySelectorAll:",
+              opts: [
+                "string",
+                "Коллекцию NodeList",
+                "object",
+                "Один элемент",
+                "undefined",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Разница NodeList и Array:",
+              opts: [
+                "NodeList не является массивом и не поддерживает все методы",
+                "Одинаковы",
+                "Array только для DOM",
+                "NodeList — объект",
+                "NodeList — функция",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Что такое event bubbling:",
+              opts: [
+                "Событие удаляется",
+                "Событие от вложенного к родительским",
+                "Изменяется CSS",
+                "Останавливается функция",
+                "Удаляется DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция stopPropagation():",
+              opts: [
+                "Изменяет HTML",
+                "Останавливает распространение события вверх",
+                "Удаляет CSS",
+                "Останавливает API",
+                "Удаляет переменную",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Когда используется event.preventDefault():",
+              opts: [
+                "При создании DOM",
+                "Для предотвращения действия по умолчанию",
+                "При добавлении CSS",
+                "При объявлении переменной",
+                "При API",
+              ],
+              ans: 1,
+            },
+          ],
+        },
+        {
+          title: "Вариант 4",
+          topic: "Продвинутый JS & async",
+          questions: [
+            {
+              q: "Функция метода closest():",
+              opts: [
+                "Ближайший родительский элемент по селектору",
+                "Все элементы",
+                "Применяет CSS",
+                "Удаляет DOM",
+                "Все вложенные",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Функция matches():",
+              opts: [
+                "Проверяет HTML",
+                "Соответствие селектору",
+                "API-ответы",
+                "Переменные",
+                "CSS-стили",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Назначение dataset:",
+              opts: [
+                "Изменяет DOM",
+                "API",
+                "Удаляет HTML",
+                "CSS",
+                "Читает и изменяет data-атрибуты",
+              ],
+              ans: 4,
+            },
+            {
+              q: 'Как получить data-id="5":',
+              opts: [
+                "element.id",
+                "element.getId()",
+                "element.attr",
+                "element.dataset.id",
+                "element.data",
+              ],
+              ans: 3,
+            },
+            {
+              q: 'Разница input.value и getAttribute("value"):',
+              opts: [
+                "Одинаковы",
+                "getAttribute — числа",
+                "value — стили",
+                "getAttribute — только DOM",
+                "value — текущее, getAttribute — начальное",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Функция form.reset():",
+              opts: [
+                "Сбрасывает форму к исходному состоянию",
+                "Удаляет CSS",
+                "Пересоздаёт DOM",
+                "Удаляет переменные",
+                "API",
+              ],
+              ans: 0,
+            },
+            {
+              q: "При нажатии submit:",
+              opts: [
+                "Меняются CSS",
+                "Удаляются DOM",
+                "Данные формы отправляются на сервер",
+                "JavaScript останавливается",
+                "Переменные удаляются",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Атрибут action в форме:",
+              opts: [
+                "Подключает CSS",
+                "Определяет адрес сервера для отправки",
+                "JavaScript",
+                "Изменяет DOM",
+                "Отключает API",
+              ],
+              ans: 1,
+            },
+            {
+              q: 'method="POST" означает:',
+              opts: [
+                "Через URL",
+                "Как GET",
+                "CSS-метод",
+                "DOM-метод",
+                "Данные в body запроса",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Особенность метода GET:",
+              opts: [
+                "Данные через URL-параметры",
+                "Через body",
+                "Только JSON",
+                "Через CSS",
+                "Отключает API",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Ключевое слово async:",
+              opts: [
+                "Создаёт асинхронную функцию",
+                "CSS",
+                "Удаляет DOM",
+                "HTML",
+                "Переменные",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Когда используется await:",
+              opts: [
+                "С DOM",
+                "В HTML",
+                "Ожидание результата внутри async",
+                "Вне API",
+                "В CSS",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Определение Promise:",
+              opts: [
+                "Тип переменной",
+                "DOM-элемент",
+                "HTML-тег",
+                "Объект результата асинхронной операции",
+                "CSS",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Функция then():",
+              opts: [
+                "Обрабатывает результат Promise",
+                "Устанавливает CSS",
+                "Создаёт DOM",
+                "Удаляет переменные",
+                "Ловит ошибки",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Назначение catch():",
+              opts: [
+                "Удаляет CSS",
+                "Обрабатывает ошибки асинхронных операций",
+                "Создаёт DOM",
+                "Сохраняет переменные",
+                "HTML",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция fetch():",
+              opts: [
+                "Создаёт HTML",
+                "Удаляет DOM",
+                "HTTP-запрос к серверу",
+                "Переменные",
+                "CSS",
+              ],
+              ans: 2,
+            },
+            {
+              q: "response.json() возвращает:",
+              opts: [
+                "Строку",
+                "Число",
+                "Boolean",
+                "JavaScript-объект из JSON",
+                "Неизвестное",
+              ],
+              ans: 3,
+            },
+            {
+              q: "this в arrow function:",
+              opts: [
+                "window",
+                "null",
+                "undefined",
+                "Значение из внешнего контекста",
+                "Собственный контекст",
+              ],
+              ans: 3,
+            },
+            {
+              q: "this означает:",
+              opts: [
+                "Значение переменной",
+                "CSS",
+                "Текущий объект",
+                "HTML",
+                "API",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Функция bind():",
+              opts: [
+                "Удаляет DOM",
+                "Привязывает this к объекту",
+                "CSS",
+                "HTML",
+                "Переменные",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Функция call():",
+              opts: [
+                "CSS",
+                "Удаляет DOM",
+                "HTML",
+                "Переменные",
+                "Вызывает функцию с контекстом",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Особенность apply():",
+              opts: [
+                "CSS",
+                "DOM",
+                "HTML",
+                "Переменные",
+                "Принимает аргументы как массив",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Оператор spread (...):",
+              opts: [
+                "CSS",
+                "HTML",
+                "DOM",
+                "API",
+                "Разворачивает массив/объект",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Оператор rest (...):",
+              opts: [
+                "CSS",
+                "HTML",
+                "DOM",
+                "API",
+                "Собирает аргументы в массив",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Destructuring:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Удаление DOM",
+                "Удаление переменных",
+                "Извлечение значений из объекта/массива",
+              ],
+              ans: 4,
+            },
+            {
+              q: "let {a} = obj делает:",
+              opts: [
+                "Удаляет obj",
+                "CSS",
+                "DOM",
+                "HTML",
+                "Извлекает значение a из obj",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Template string пишется:",
+              opts: [
+                "В двойных кавычках",
+                "В одинарных кавычках",
+                "В HTML",
+                "В скобках",
+                "В обратных кавычках",
+              ],
+              ans: 4,
+            },
+            {
+              q: "localStorage vs sessionStorage:",
+              opts: [
+                "Одинаковы",
+                "sessionStorage навсегда",
+                "localStorage временно",
+                "Удаляются вместе",
+                "sessionStorage только в рамках сессии",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Что НЕ используется в JSON:",
+              opts: ["string", "number", "object", "array", "function"],
+              ans: 4,
+            },
+            {
+              q: "DOMContentLoaded срабатывает:",
+              opts: [
+                "После всех ресурсов",
+                "После CSS",
+                "После API",
+                "После JS",
+                "После загрузки HTML и готовности DOM",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Атрибут defer:",
+              opts: [
+                "CSS",
+                "HTML",
+                "DOM",
+                "API",
+                "Выполняет JavaScript после загрузки HTML",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Атрибут async:",
+              opts: [
+                "CSS",
+                "HTML",
+                "DOM",
+                "API",
+                "Загружает JS независимо и выполняет после готовности",
+              ],
+              ans: 4,
+            },
+            {
+              q: "Event delegation:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Удаление DOM",
+                "API",
+                "Обработчик на родителе для дочерних элементов",
+              ],
+              ans: 4,
+            },
+            {
+              q: "includes() проверяет:",
+              opts: [
+                "CSS",
+                "HTML",
+                "DOM",
+                "API",
+                "Наличие элемента в массиве/строке",
+              ],
+              ans: 4,
+            },
+            {
+              q: "startsWith() проверяет:",
+              opts: ["CSS", "DOM", "HTML", "API", "Начало строки"],
+              ans: 4,
+            },
+            {
+              q: "endsWith() проверяет:",
+              opts: ["CSS", "HTML", "DOM", "API", "Конец строки"],
+              ans: 4,
+            },
+            {
+              q: "trim() делает:",
+              opts: ["CSS", "DOM", "HTML", "API", "Удаляет пробелы в строке"],
+              ans: 4,
+            },
+            {
+              q: "split() делает:",
+              opts: ["CSS", "DOM", "HTML", "API", "Разбивает строку на массив"],
+              ans: 4,
+            },
+            {
+              q: "join() делает:",
+              opts: ["CSS", "DOM", "HTML", "API", "Объединяет массив в строку"],
+              ans: 4,
+            },
+            {
+              q: "Основная роль JavaScript:",
+              opts: [
+                "Создание дизайна",
+                "HTML",
+                "Сервер",
+                "CSS",
+                "Интерактивность и поведение",
+              ],
+              ans: 4,
+            },
+          ],
+        },
+        {
+          title: "Вариант 5",
+          topic: "React, Node.js & безопасность",
+          questions: [
+            {
+              q: "Семантическая структура HTML:",
+              opts: [
+                "<div> для всего",
+                "<span> основная структура",
+                "<section> для стилей",
+                "<header>, <main>, <footer> разделяют контент",
+                "<b> структурный",
+              ],
+              ans: 3,
+            },
+            {
+              q: "closest() делает:",
+              opts: [
+                "Все элементы",
+                "Ближайший родительский элемент",
+                "CSS",
+                "DOM",
+                "Дочерние",
+              ],
+              ans: 1,
+            },
+            {
+              q: "matches() проверяет:",
+              opts: [
+                "HTML",
+                "Переменную",
+                "API",
+                "Соответствие селектору",
+                "CSS",
+              ],
+              ans: 3,
+            },
+            {
+              q: "dataset используется для:",
+              opts: [
+                "CSS",
+                "Удаление HTML",
+                "data-атрибуты пользователя",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Когда перерендеривается React компонент:",
+              opts: [
+                "При изменении DOM",
+                "При изменении CSS",
+                "При изменении state или props",
+                "При useEffect",
+                "Всегда",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Пустой dependency array в useEffect:",
+              opts: [
+                "При каждом рендере",
+                "Только один раз",
+                "При props",
+                "При state",
+                "Никогда",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Неправильный key в React:",
+              opts: [
+                "Ломает CSS",
+                "Останавливает API",
+                "Ошибки в diffing DOM",
+                "Удаляет state",
+                "Компонент не загружается",
+              ],
+              ans: 2,
+            },
+            {
+              q: "useState асинхронный?",
+              opts: [
+                "Синхронный",
+                "Только сервер",
+                "Обновляется асинхронно",
+                "Только в useEffect",
+                "Зависит от DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Immutable props означает:",
+              opts: [
+                "Props не изменяются",
+                "Только на сервере",
+                "В useEffect",
+                "Можно изменять",
+                "Всегда JSON",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Преимущество Virtual DOM:",
+              opts: [
+                "Ускорение CSS",
+                "Генерация HTML",
+                "Оптимизация рендера",
+                "Ускорение API",
+                "JSON",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Event loop в Node.js:",
+              opts: [
+                "HTML",
+                "CSS",
+                "Управление асинхронными операциями",
+                "DOM",
+                "API",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Callback hell:",
+              opts: [
+                "Ошибка CSS",
+                "Ошибка HTML",
+                "Многоуровневые вложенные callback",
+                "Ошибка API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Promise chaining:",
+              opts: [
+                "Удаление Promise",
+                "Цепочка then()",
+                "Сохранение",
+                "Остановка",
+                "Загрузка",
+              ],
+              ans: 1,
+            },
+            {
+              q: "async/await используется:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Упрощение асинхронного кода",
+                "DOM",
+                "JSON",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Порядок middleware в Express:",
+              opts: [
+                "Случайный",
+                "Через CSS",
+                "В порядке написания",
+                "JSON",
+                "API",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Назначение JWT:",
+              opts: ["CSS", "HTML", "Аутентификация", "DOM", "API"],
+              ans: 2,
+            },
+            {
+              q: "Защита от SQL Injection:",
+              opts: [
+                "CSS-фильтр",
+                "Prepared statements",
+                "HTML-escape",
+                "JSON parse",
+                "DOM sanitize",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Защита от XSS:",
+              opts: ["CSS", "HTML", "Санитизация ввода", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "CORS ошибка возникает:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Запрос к другому домену с ограничением",
+                "API",
+                "JSON",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Controlled vs uncontrolled компоненты:",
+              opts: ["CSS", "HTML", "Управление через state", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "_id в MongoDB:",
+              opts: ["CSS", "HTML", "Уникальный идентификатор", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "REST stateless:",
+              opts: [
+                "Нет CSS",
+                "Нет HTML",
+                "Сервер не хранит состояние",
+                "Нет API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "HTTP 500:",
+              opts: [
+                "Ошибка клиента",
+                "Перенаправление",
+                "Ошибка сервера",
+                "Нет соединения",
+                "JSON",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Git rebase vs merge:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Переписывание истории vs объединение",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Lifting state up:",
+              opts: ["CSS", "HTML", "Поднятие состояния вверх", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "useMemo:",
+              opts: ["CSS", "HTML", "Кэширование вычислений", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "useCallback:",
+              opts: ["CSS", "HTML", "Кэширует функцию", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "Throttling vs Debouncing:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Управление частотой вызовов",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Salt в bcrypt:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Повышает безопасность хеширования",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "HTTPS безопасен потому что:",
+              opts: ["CSS", "HTML", "Использует шифрование", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "React Fragment:",
+              opts: ["CSS", "HTML", "Обёртка без DOM-элемента", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "Lazy loading:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Повышение производительности",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Преимущество CDN:",
+              opts: ["CSS", "HTML", "Быстрая доставка контента", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "Rate limiting:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Ограничение количества запросов",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "State нельзя изменять напрямую:",
+              opts: [
+                "Влияет на CSS",
+                "Ломает HTML",
+                "React не отслеживает изменения",
+                "Останавливает API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "setState не обновляется сразу из-за:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Batching — группировка обновлений",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "React reconciliation:",
+              opts: ["CSS", "HTML", "Сравнение Virtual DOM", "API", "JSON"],
+              ans: 2,
+            },
+            {
+              q: "useEffect cleanup выполняется:",
+              opts: [
+                "При CSS",
+                "При HTML",
+                "При API",
+                "При размонтировании или изменении зависимостей",
+                "При каждом рендере",
+              ],
+              ans: 3,
+            },
+            {
+              q: "StrictMode:",
+              opts: [
+                "Проверка CSS",
+                "HTML",
+                "Обнаружение ошибок",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Non-blocking I/O в Node.js:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Не блокирует основной поток",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+          ],
+        },
+        {
+          title: "Вариант 6",
+          topic: "HTML/CSS/JS + Git основы",
+          questions: [
+            {
+              q: "<article> в HTML5:",
+              opts: [
+                "Задание стилей",
+                "Отдельный независимый контент",
+                "Написание скриптов",
+                "Изображения",
+                "Формы",
+              ],
+              ans: 1,
+            },
+            {
+              q: "<aside> используется для:",
+              opts: [
+                "Основной контент",
+                "Навигация",
+                "Дополнительная информация",
+                "Скрипты",
+                "CSS",
+              ],
+              ans: 2,
+            },
+            {
+              q: "display: flex:",
+              opts: [
+                "Окраска текста",
+                "Скрытие",
+                "Гибкое расположение элементов",
+                "Анимации",
+                "Шрифт",
+              ],
+              ans: 2,
+            },
+            {
+              q: "position: absolute:",
+              opts: [
+                "По потоку",
+                "Относительно экрана",
+                "Относительно позиционированного родителя",
+                "Только body",
+                "Как fixed",
+              ],
+              ans: 2,
+            },
+            {
+              q: "typeof null:",
+              opts: ["null", "undefined", "object", "number", "string"],
+              ans: 2,
+            },
+            {
+              q: "=== делает:",
+              opts: [
+                "Только значение",
+                "Только тип",
+                "Тип и значение",
+                "Сложение",
+                "Вычитание",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Array.map():",
+              opts: [
+                "Фильтрует",
+                "Изменяет",
+                "Возвращает новый массив",
+                "Удаляет",
+                "Добавляет",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Array.filter():",
+              opts: [
+                "Всё",
+                "Элементы по условию",
+                "Один элемент",
+                "Объект",
+                "Удаляет",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Promise.resolve():",
+              opts: ["catch", "then", "finally", "reject", "Стоп"],
+              ans: 1,
+            },
+            {
+              q: "async-функция всегда возвращает:",
+              opts: ["string", "number", "Promise", "object", "array"],
+              ans: 2,
+            },
+            {
+              q: "DOM:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Модель структуры документа",
+                "API",
+                "JSON",
+              ],
+              ans: 2,
+            },
+            {
+              q: "addEventListener:",
+              opts: ["CSS", "Прослушивание событий", "HTML", "API", "DOM"],
+              ans: 1,
+            },
+            {
+              q: "localStorage:",
+              opts: [
+                "Временное",
+                "Сервер",
+                "Постоянное хранение в браузере",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "sessionStorage отличается:",
+              opts: [
+                "Навсегда",
+                "Только в рамках сессии",
+                "Сервер",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "fetch():",
+              opts: ["CSS", "HTML", "HTTP-запрос", "DOM", "JSON"],
+              ans: 2,
+            },
+            {
+              q: "JSON.parse():",
+              opts: [
+                "Объект → строка",
+                "Строка → объект",
+                "Массив → строка",
+                "HTML",
+                "CSS",
+              ],
+              ans: 1,
+            },
+            {
+              q: "JSON.stringify():",
+              opts: [
+                "Строка → объект",
+                "Объект → строка",
+                "Массив → число",
+                "HTML",
+                "CSS",
+              ],
+              ans: 1,
+            },
+            {
+              q: "forEach возвращает:",
+              opts: ["Массив", "undefined", "object", "number", "string"],
+              ans: 1,
+            },
+            {
+              q: "setTimeout:",
+              opts: [
+                "Сразу",
+                "С задержкой",
+                "Повторяет",
+                "Удаляет",
+                "Останавливает",
+              ],
+              ans: 1,
+            },
+            {
+              q: "setInterval:",
+              opts: [
+                "Один раз",
+                "Выполняется повторно",
+                "Удаляет",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "CSS specificity:",
+              opts: [
+                "Скорость",
+                "Приоритет (вес стилей)",
+                "Цвет",
+                "Анимация",
+                "Шрифт",
+              ],
+              ans: 1,
+            },
+            {
+              q: "z-index:",
+              opts: [
+                "Цвет",
+                "Слои — наложение элементов",
+                "Размер",
+                "Шрифт",
+                "Анимация",
+              ],
+              ans: 1,
+            },
+            {
+              q: "media query:",
+              opts: ["API", "Адаптивный дизайн", "HTML", "DOM", "JSON"],
+              ans: 1,
+            },
+            {
+              q: "overflow: hidden:",
+              opts: [
+                "Показывает",
+                "Скрывает содержимое",
+                "Вращает",
+                "Увеличивает",
+                "Уменьшает",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Git commit:",
+              opts: [
+                "Удаляет",
+                "Сохраняет изменения",
+                "Добавляет",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Git push:",
+              opts: [
+                "Локально",
+                "Загружает в репозиторий",
+                "Удаляет",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Git pull:",
+              opts: [
+                "Удаляет",
+                "Получает изменения",
+                "Добавляет",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Branch (ветка):",
+              opts: ["CSS", "HTML", "Параллельная разработка", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "Merge conflict возникает:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Изменение одного файла двумя",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Debugging:",
+              opts: ["Написание кода", "Поиск ошибок", "API", "DOM", "CSS"],
+              ans: 1,
+            },
+            {
+              q: "console.log:",
+              opts: ["CSS", "HTML", "Вывод логов", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "try...catch:",
+              opts: ["CSS", "HTML", "Обработка ошибок", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "NaN:",
+              opts: [
+                "Number",
+                "Некорректное числовое значение",
+                "String",
+                "Object",
+                "Array",
+              ],
+              ans: 1,
+            },
+            {
+              q: "isNaN проверяет:",
+              opts: [
+                "String",
+                "Number",
+                "Не является числом",
+                "Object",
+                "Array",
+              ],
+              ans: 2,
+            },
+            {
+              q: "parseInt:",
+              opts: [
+                "String → integer",
+                "Integer → string",
+                "Array → number",
+                "HTML",
+                "CSS",
+              ],
+              ans: 0,
+            },
+            {
+              q: "parseFloat:",
+              opts: [
+                "String → float",
+                "Float → string",
+                "Array",
+                "HTML",
+                "CSS",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Boolean():",
+              opts: [
+                "Number",
+                "Преобразует в boolean",
+                "String",
+                "Array",
+                "Object",
+              ],
+              ans: 1,
+            },
+            {
+              q: "null vs undefined:",
+              opts: [
+                "Одинаковы",
+                "null — намеренно пустое, undefined — не определено",
+                "Только number",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Стрелочная функция:",
+              opts: ["Нет this", "Лексический this", "DOM", "API", "CSS"],
+              ans: 1,
+            },
+            {
+              q: "Template literal:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Удобное добавление переменных в строку",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+          ],
+        },
+        {
+          title: "Вариант 7",
+          topic: "HTML/CSS + Git продвинутый",
+          questions: [
+            {
+              q: "<nav> в HTML:",
+              opts: [
+                "Изображения",
+                "Навигационные ссылки",
+                "Скрипты",
+                "CSS",
+                "Формы",
+              ],
+              ans: 1,
+            },
+            {
+              q: "<figure>:",
+              opts: [
+                "Только текст",
+                "Формы",
+                "Медиа-контент и описание",
+                "Скрипты",
+                "CSS",
+              ],
+              ans: 2,
+            },
+            {
+              q: "display: grid:",
+              opts: ["Цвет", "Анимации", "Сеточный layout", "Шрифт", "Скрытие"],
+              ans: 2,
+            },
+            {
+              q: "position: fixed:",
+              opts: [
+                "Относительно родителя",
+                "По потоку",
+                "Фиксируется на экране",
+                "Только body",
+                "Как absolute",
+              ],
+              ans: 2,
+            },
+            {
+              q: "NaN === NaN:",
+              opts: ["true", "false", "undefined", "null", "error"],
+              ans: 1,
+            },
+            {
+              q: "Разница == и ===:",
+              opts: [
+                "Одинаковы",
+                "=== только значение",
+                "== только тип",
+                "=== тип и значение",
+                "== ошибки",
+              ],
+              ans: 3,
+            },
+            {
+              q: "Array.reduce():",
+              opts: [
+                "Удаляет",
+                "Сводит к одному значению",
+                "Копирует",
+                "Сортирует",
+                "Фильтрует",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Array.find():",
+              opts: [
+                "Все элементы",
+                "Новый массив",
+                "Первый подходящий элемент",
+                "Всегда undefined",
+                "Объект",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Promise.reject():",
+              opts: ["then", "catch", "finally", "resolve", "Стоп"],
+              ans: 1,
+            },
+            {
+              q: "finally выполняется:",
+              opts: [
+                "Только resolve",
+                "Только reject",
+                "Всегда",
+                "Иногда",
+                "Никогда",
+              ],
+              ans: 2,
+            },
+            {
+              q: "DOM tree:",
+              opts: ["CSS", "JSON", "Дерево структуры HTML", "API", "Script"],
+              ans: 2,
+            },
+            {
+              q: "removeEventListener:",
+              opts: ["Добавляет", "Удаляет событие", "CSS", "HTML", "API"],
+              ans: 1,
+            },
+            {
+              q: "Cookies:",
+              opts: ["CSS", "Обмен данными с сервером", "HTML", "DOM", "API"],
+              ans: 1,
+            },
+            {
+              q: "Session cookie:",
+              opts: [
+                "Навсегда",
+                "Удаляется после сессии",
+                "Сервер",
+                "JSON",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "axios:",
+              opts: ["CSS", "HTML", "HTTP-запросы", "DOM", "JSON"],
+              ans: 2,
+            },
+            {
+              q: "HTTP GET:",
+              opts: [
+                "Удаляет",
+                "Получает данные",
+                "Обновляет",
+                "Добавляет",
+                "Безопасность",
+              ],
+              ans: 1,
+            },
+            {
+              q: "HTTP POST:",
+              opts: [
+                "Чтение",
+                "Удаление",
+                "Добавление новых данных",
+                "Копирование",
+                "Просмотр",
+              ],
+              ans: 2,
+            },
+            {
+              q: "for...of:",
+              opts: ["Объекты", "Массивы / итерация", "DOM", "API", "CSS"],
+              ans: 1,
+            },
+            {
+              q: "clearTimeout:",
+              opts: [
+                "Повторяет",
+                "Останавливает таймер",
+                "Выполняет",
+                "Добавляет",
+                "Удаляет",
+              ],
+              ans: 1,
+            },
+            {
+              q: "clearInterval:",
+              opts: [
+                "Один раз",
+                "Останавливает интервал",
+                "Повторяет",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "margin:",
+              opts: [
+                "Внутренний отступ",
+                "Внешний отступ",
+                "Цвет",
+                "Шрифт",
+                "Анимация",
+              ],
+              ans: 1,
+            },
+            {
+              q: "padding:",
+              opts: [
+                "Внешний отступ",
+                "Внутренний отступ",
+                "Слой",
+                "Цвет",
+                "Размер",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Responsive design:",
+              opts: [
+                "CSS",
+                "HTML",
+                "Адаптация под разные экраны",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "overflow: scroll:",
+              opts: [
+                "Скрывает",
+                "Добавляет прокрутку",
+                "Увеличивает",
+                "Уменьшает",
+                "Удаляет",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Git clone:",
+              opts: ["Удаляет", "Создаёт копию", "Добавляет", "API", "DOM"],
+              ans: 1,
+            },
+            {
+              q: "Git status:",
+              opts: [
+                "Историю",
+                "Состояние изменений",
+                "Удаление",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Git log:",
+              opts: [
+                "Удаляет",
+                "Показывает историю",
+                "Добавляет",
+                "API",
+                "DOM",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Git checkout (branch):",
+              opts: ["Удаляет", "Переключает ветку", "Добавляет", "API", "DOM"],
+              ans: 1,
+            },
+            {
+              q: "Конфликт в Git решается:",
+              opts: ["CSS", "HTML", "Ручным исправлением", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "Testing:",
+              opts: ["Написание кода", "Проверка ошибок", "API", "DOM", "CSS"],
+              ans: 1,
+            },
+            {
+              q: "console.error:",
+              opts: ["CSS", "HTML", "Вывод ошибок", "API", "DOM"],
+              ans: 2,
+            },
+            {
+              q: "Блок try:",
+              opts: [
+                "Ловит ошибки",
+                "Проверяет код",
+                "Выполняет код",
+                "API",
+                "DOM",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Infinity:",
+              opts: [
+                "Число",
+                "Бесконечное значение",
+                "String",
+                "Object",
+                "Array",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Number():",
+              opts: [
+                "String",
+                "Преобразует в число",
+                "Boolean",
+                "Object",
+                "Array",
+              ],
+              ans: 1,
+            },
+            {
+              q: "toString():",
+              opts: ["Число", "Преобразует в строку", "Array", "HTML", "CSS"],
+              ans: 1,
+            },
+            {
+              q: "Math.random():",
+              opts: [
+                "Integer",
+                "Случайное число от 0 до 1",
+                "String",
+                "Object",
+                "Array",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Значение false среди:",
+              opts: ['"0"', "1", "0", '"true"', "{}"],
+              ans: 2,
+            },
+            {
+              q: "undefined появляется:",
+              opts: [
+                "Переменная без значения",
+                "При null",
+                "При 0",
+                "String",
+                "Array",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Function declaration:",
+              opts: ["Нет hoisting", "Есть hoisting", "DOM", "API", "CSS"],
+              ans: 1,
+            },
+            {
+              q: "spread operator (...):",
+              opts: ["CSS", "HTML", "Расширяет массив/объект", "API", "DOM"],
+              ans: 2,
+            },
+          ],
+        },
+        {
+          title: "Вариант 8",
+          topic: "CI/CD, DevOps & тестирование",
+          questions: [
+            {
+              q: "Continuous Integration (CI):",
+              opts: [
+                "Объединение изменений и автоматическое тестирование",
+                "Остановка сервера",
+                "Переработка интерфейса",
+                "Ручное обновление БД",
+                "Удаление файлов",
+              ],
+              ans: 0,
+            },
+            {
+              q: "Incremental backup:",
+              opts: [
+                "Полное копирование",
+                "Системные файлы",
+                "Копирование только последних изменений",
+                "Ручное сохранение",
+                "Без архивации",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Full backup:",
+              opts: [
+                "Часть данных",
+                "Только БД",
+                "Полная копия всей информации",
+                "Только код",
+                "Только API",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Disaster Recovery:",
+              opts: [
+                "Обновление кода",
+                "Переработка UI",
+                "Стратегия восстановления после аварии",
+                "API анализ",
+                "Удаление данных",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Rollback при деплое:",
+              opts: [
+                "Удаление кода",
+                "Остановка сервера",
+                "Возврат к предыдущей версии",
+                "Переработка API",
+                "Улучшение UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Blue-Green deployment:",
+              opts: [
+                "Обновление дизайна",
+                "API",
+                "Обновление через две среды",
+                "Стиль кода",
+                "Хранение данных",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Canary deployment:",
+              opts: [
+                "Для всех сразу",
+                "Отключение API",
+                "Постепенное на небольшой группе",
+                "Остановка кода",
+                "Перезагрузка",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Цель мониторинга:",
+              opts: [
+                "Написание кода",
+                "Изменение UI",
+                "Контроль системы и ошибок",
+                "Удаление API",
+                "Хранение данных",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Log-файлы:",
+              opts: [
+                "Написание кода",
+                "UI элементы",
+                "Запись ошибок и истории",
+                "Создание API",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Docker:",
+              opts: [
+                "Дизайн",
+                "API тесты",
+                "Контейнеризация приложений",
+                "Оптимизация кода",
+                "Удаление файлов",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Kubernetes:",
+              opts: [
+                "Написание кода",
+                "UI",
+                "Управление контейнерами",
+                "Удаление API",
+                "Архивация",
+              ],
+              ans: 2,
+            },
+            {
+              q: "SLA:",
+              opts: [
+                "Стандарт кода",
+                "Тип API",
+                "Соглашение об уровне обслуживания",
+                "UI элементы",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Uptime:",
+              opts: [
+                "Длина кода",
+                "API",
+                "Время непрерывной работы системы",
+                "Объём данных",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Smoke testing:",
+              opts: [
+                "Полное тестирование",
+                "Тест UI",
+                "Быстрая проверка основных функций",
+                "Тест API",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Sanity testing:",
+              opts: [
+                "Полный тест",
+                "При написании кода",
+                "Короткая проверка после изменений",
+                "API структура",
+                "Дизайн",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Black-box testing:",
+              opts: [
+                "Анализ кода",
+                "Проверка сервера",
+                "Тестирование без знания логики",
+                "Удаление API",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "White-box testing:",
+              opts: [
+                "Тест UI",
+                "API",
+                "Тестирование с доступом к коду",
+                "Остановка сервера",
+                "Хранение",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Exploratory testing:",
+              opts: [
+                "По плану",
+                "Через код",
+                "Свободное исследование",
+                "Автоматический API",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Test case:",
+              opts: ["Код", "API", "Сценарий тестирования", "Сервер", "Файл"],
+              ans: 2,
+            },
+            {
+              q: "Test suite:",
+              opts: ["Один тест", "API", "Полный набор тестов", "UI", "Код"],
+              ans: 2,
+            },
+            {
+              q: "Bug tracking:",
+              opts: [
+                "Написание кода",
+                "Дизайн",
+                "Регистрация и отслеживание ошибок",
+                "API",
+                "Хранение",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Jira:",
+              opts: [
+                "IDE",
+                "Сервер",
+                "Система управления задачами",
+                "API",
+                "Фреймворк",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Version control:",
+              opts: ["Docker", "Kubernetes", "Git", "Jenkins", "Postman"],
+              ans: 2,
+            },
+            {
+              q: "Git commit:",
+              opts: ["Удаление", "API", "Сохранение изменений", "Сервер", "UI"],
+              ans: 2,
+            },
+            {
+              q: "Git merge:",
+              opts: [
+                "Удаление",
+                "API тест",
+                "Объединение веток",
+                "Сервер",
+                "Хранение",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Branch:",
+              opts: ["Ошибка", "API", "Отдельная ветка кода", "UI", "Сервер"],
+              ans: 2,
+            },
+            {
+              q: "Pull request:",
+              opts: [
+                "Удаление",
+                "API",
+                "Запрос на объединение изменений",
+                "Сервер",
+                "Хранение",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Merge conflict:",
+              opts: [
+                "Нет кода",
+                "API",
+                "Противоречивые изменения в одном файле",
+                "UI",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Staging environment:",
+              opts: [
+                "Production",
+                "Dev",
+                "Тестовая среда похожая на production",
+                "API",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Production environment:",
+              opts: [
+                "Тестирование",
+                "API разработка",
+                "Среда для реальных пользователей",
+                "UI",
+                "Хранение",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Hotfix:",
+              opts: [
+                "Плановое обновление",
+                "API",
+                "Срочное исправление ошибки",
+                "UI",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Load balancer:",
+              opts: ["Код", "UI", "Распределение трафика", "API", "Данные"],
+              ans: 2,
+            },
+            {
+              q: "Reverse proxy:",
+              opts: [
+                "Клиент",
+                "API",
+                "Направляет запросы к серверу",
+                "UI",
+                "Код",
+              ],
+              ans: 2,
+            },
+            {
+              q: "SSL-сертификат:",
+              opts: ["Код", "API", "Безопасное соединение", "UI", "Сервер"],
+              ans: 2,
+            },
+            {
+              q: "HTTPS:",
+              opts: [
+                "Обычный HTTP",
+                "API",
+                "Безопасный протокол HTTP",
+                "UI",
+                "Код",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Retention policy:",
+              opts: [
+                "Время кода",
+                "API",
+                "Срок хранения резервных копий",
+                "Сервер",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Snapshot backup:",
+              opts: [
+                "Неполная копия",
+                "Только API",
+                "Состояние системы в момент времени",
+                "Изменение кода",
+                "Удаление",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Failover:",
+              opts: [
+                "Код",
+                "UI",
+                "Переключение на резервную систему",
+                "API тест",
+                "Данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "High availability:",
+              opts: [
+                "Качество кода",
+                "UI",
+                "Непрерывная работа системы",
+                "API",
+                "Файлы",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Horizontal scaling:",
+              opts: [
+                "Мощность одного сервера",
+                "Код",
+                "Добавление новых серверов",
+                "API",
+                "UI",
+              ],
+              ans: 2,
+            },
+          ],
+        },
+        {
+          title: "Вариант 9",
+          topic: "CI/CD & DevOps углублённый",
+          questions: [
+            {
+              q: "Цель CI:",
+              opts: [
+                "Интерфейс",
+                "Объединение и проверка изменений кода",
+                "Удаление данных",
+                "Сервер",
+                "API",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Continuous Delivery:",
+              opts: [
+                "Ручной тест",
+                "Остановка",
+                "Автоматическая доставка кода",
+                "UI",
+                "Данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Backup нужен для:",
+              opts: [
+                "Код",
+                "UI",
+                "Защита и восстановление данных",
+                "API",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Differential backup:",
+              opts: [
+                "Все данные",
+                "Изменения после последнего full backup",
+                "Только код",
+                "API",
+                "Удаление",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Deployment:",
+              opts: [
+                "Написание кода",
+                "Тестирование",
+                "Размещение приложения на сервере",
+                "UI",
+                "Данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Rollback используется:",
+              opts: [
+                "Всё ок",
+                "UI",
+                "Возврат к предыдущей версии при ошибке",
+                "API",
+                "Удаление",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Canary release:",
+              opts: [
+                "Для всех",
+                "Постепенное тестирование обновления",
+                "Сервер",
+                "Код",
+                "UI",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Monitoring:",
+              opts: [
+                "Пишет код",
+                "UI",
+                "Отслеживает работу системы",
+                "API",
+                "Файлы",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Logging:",
+              opts: [
+                "Компиляция",
+                "UI",
+                "Запись действий системы",
+                "API",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Containerization:",
+              opts: [
+                "Сжатие кода",
+                "Запуск в контейнере",
+                "UI",
+                "API",
+                "Данные",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Kubernetes:",
+              opts: ["Код", "Управление контейнерами", "UI", "API", "Данные"],
+              ans: 1,
+            },
+            {
+              q: "SLA:",
+              opts: [
+                "Код",
+                "API",
+                "Соглашение об уровне обслуживания",
+                "UI",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Uptime:",
+              opts: [
+                "Объём кода",
+                "API",
+                "Время работы системы",
+                "UI",
+                "Размер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Smoke test:",
+              opts: [
+                "Полное тестирование",
+                "Быстрая проверка основных функций",
+                "UI",
+                "API",
+                "Сервер",
+              ],
+              ans: 1,
+            },
+            {
+              q: "Sanity test:",
+              opts: [
+                "Полное",
+                "Написание кода",
+                "После изменений",
+                "API",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Black-box testing:",
+              opts: [
+                "Знание кода",
+                "Внутренняя структура",
+                "Без знания логики",
+                "API",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "White-box testing:",
+              opts: ["UI", "API", "С пониманием кода", "Сервер", "Данные"],
+              ans: 2,
+            },
+            {
+              q: "Exploratory testing:",
+              opts: [
+                "По плану",
+                "Автоматически",
+                "Свободное исследование",
+                "API",
+                "UI",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Test case:",
+              opts: ["Код", "API", "Сценарий тестирования", "Сервер", "Файл"],
+              ans: 2,
+            },
+            {
+              q: "Test suite:",
+              opts: ["Один тест", "API", "Набор тестов", "UI", "Код"],
+              ans: 2,
+            },
+            {
+              q: "Bug tracking:",
+              opts: ["Код", "UI", "Отслеживание ошибок", "API", "Данные"],
+              ans: 2,
+            },
+            {
+              q: "Jira:",
+              opts: [
+                "IDE",
+                "Сервер",
+                "Управление проектами",
+                "API",
+                "Фреймворк",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Version control пример:",
+              opts: ["Docker", "Jenkins", "Git", "Postman", "Kubernetes"],
+              ans: 2,
+            },
+            {
+              q: "Commit:",
+              opts: ["Удаление", "API", "Сохранение изменений", "Сервер", "UI"],
+              ans: 2,
+            },
+            {
+              q: "Merge:",
+              opts: [
+                "Удаление",
+                "API тест",
+                "Объединение веток",
+                "Сервер",
+                "Данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Branch:",
+              opts: ["Ошибка", "API", "Отдельная версия кода", "UI", "Сервер"],
+              ans: 2,
+            },
+            {
+              q: "Pull request:",
+              opts: [
+                "Удаление",
+                "API",
+                "Запрос на объединение",
+                "Сервер",
+                "Данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Merge conflict:",
+              opts: [
+                "Нет кода",
+                "API",
+                "Конфликт в одном файле",
+                "UI",
+                "Сервер",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Staging environment:",
+              opts: ["Production", "Dev", "Тестовая среда", "API", "UI"],
+              ans: 2,
+            },
+            {
+              q: "Production environment:",
+              opts: ["Тест", "API", "Реальная рабочая среда", "UI", "Код"],
+              ans: 2,
+            },
+            {
+              q: "Hotfix:",
+              opts: ["Плановое", "API", "Срочное исправление", "UI", "Сервер"],
+              ans: 2,
+            },
+            {
+              q: "Load balancer:",
+              opts: ["Код", "UI", "Распределение трафика", "API", "Данные"],
+              ans: 2,
+            },
+            {
+              q: "Reverse proxy:",
+              opts: ["Клиент", "API", "Перенаправляет запросы", "UI", "Код"],
+              ans: 2,
+            },
+            {
+              q: "SSL:",
+              opts: ["Код", "API", "Безопасность соединения", "UI", "Сервер"],
+              ans: 2,
+            },
+            {
+              q: "HTTPS:",
+              opts: ["HTTP", "API", "Безопасный протокол", "UI", "Код"],
+              ans: 2,
+            },
+            {
+              q: "Retention policy:",
+              opts: ["Код", "API", "Срок хранения данных", "Сервер", "UI"],
+              ans: 2,
+            },
+            {
+              q: "Snapshot backup:",
+              opts: [
+                "Неполная",
+                "API",
+                "Состояние в определённый момент",
+                "Код",
+                "Файлы",
+              ],
+              ans: 2,
+            },
+            {
+              q: "Failover:",
+              opts: [
+                "Код",
+                "UI",
+                "Переключение на резервную систему",
+                "API",
+                "Данные",
+              ],
+              ans: 2,
+            },
+            {
+              q: "High availability:",
+              opts: ["Код", "UI", "Непрерывная работа", "API", "Файлы"],
+              ans: 2,
+            },
+            {
+              q: "Vertical scaling:",
+              opts: [
+                "Добавление серверов",
+                "API",
+                "Увеличение мощности одного сервера",
+                "Код",
+                "UI",
+              ],
+              ans: 2,
+            },
+          ],
+        },
+      ];
+
+      const topics = [
+        "HTML5 & CSS",
+        "JavaScript основы",
+        "DOM & события",
+        "Продвинутый JS",
+        "React & Node.js",
+        "HTML/CSS/JS + Git",
+        "Git продвинутый",
+        "CI/CD & DevOps",
+        "DevOps углублённый",
+      ];
+
+      let currentVariant = null;
+      let questions = [];
+      let current = 0;
+      let score = 0;
+      let answered = 0;
+      let mistakes = [];
+      let quizSettings = { shuffleQ: true, shuffleA: true, showCorrect: true };
+
+      function buildHome() {
+        const grid = document.getElementById("variantGrid");
+        grid.innerHTML = "";
+        VARIANTS.forEach((v, i) => {
+          const btn = document.createElement("button");
+          btn.className = "var-btn";
+          btn.innerHTML = `<span class="vnum">В${i + 1}</span><span class="vtopic">${topics[i]}</span>`;
+          btn.onclick = () => openSettings(i);
+          grid.appendChild(btn);
+        });
+      }
+
+      function openSettings(varIdx) {
+        currentVariant = varIdx;
+        if (varIdx === "all") {
+          document.getElementById("settingsTitle").textContent = "Все варианты";
+          document.getElementById("settingsSub").textContent =
+            "360 вопросов · настрой режим";
+        } else {
+          document.getElementById("settingsTitle").textContent =
+            VARIANTS[varIdx].title;
+          document.getElementById("settingsSub").textContent =
+            topics[varIdx] + " · 40 вопросов";
+        }
+        show("settings");
+      }
+
+      function toggle(id, isNo) {
+        const yes = document.getElementById(id);
+        const no = document.getElementById(id + "_no");
+        if (isNo) {
+          no.classList.add("on");
+          yes.classList.remove("on");
+          quizSettings[id] = false;
+        } else {
+          yes.classList.add("on");
+          no.classList.remove("on");
+          quizSettings[id] = true;
+        }
+      }
+
+      function startQuiz() {
+        let pool = [];
+        if (currentVariant === "all") {
+          VARIANTS.forEach(
+            (v) =>
+              (pool = pool.concat(
+                v.questions.map((q) => ({ ...q, variant: v.title })),
+              )),
+          );
+        } else {
+          pool = VARIANTS[currentVariant].questions.map((q) => ({
+            ...q,
+            variant: VARIANTS[currentVariant].title,
+          }));
+        }
+        questions = quizSettings.shuffleQ ? shuffle([...pool]) : [...pool];
+        current = 0;
+        score = 0;
+        answered = 0;
+        mistakes = [];
+        document.getElementById("qTotal").textContent = questions.length;
+        show("quiz");
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        const q = questions[current];
+        document.getElementById("qCurrent").textContent = current + 1;
+        document.getElementById("qLabel").textContent =
+          (q.variant || "") + " · Вопрос " + (current + 1);
+        document.getElementById("qText").textContent = q.q;
+        document.getElementById("progressFill").style.width =
+          (current / questions.length) * 100 + "%";
+        document.getElementById("scorePill").textContent =
+          score + " / " + answered;
+        document.getElementById("btnNext").classList.remove("show");
+        const opts = document.getElementById("options");
+        opts.innerHTML = "";
+        const labels = ["A", "B", "C", "D", "E"];
+        let displayOpts = q.opts.map((o, i) => ({ text: o, origIdx: i }));
+        if (quizSettings.shuffleA) displayOpts = shuffle(displayOpts);
+        displayOpts.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerHTML = `<span class="opt-label">${labels[i]}</span><span>${opt.text}</span>`;
+          btn.onclick = () => answerQ(btn, opt.origIdx, q.ans, displayOpts);
+          opts.appendChild(btn);
+        });
+        const card = document.querySelector(".question-card");
+        card.style.animation = "none";
+        requestAnimationFrame(() => {
+          card.style.animation = "fadeUp 0.35s ease forwards";
+        });
+      }
+
+      function answerQ(btn, chosen, correct, displayOpts) {
+        const btns = document.querySelectorAll(".option-btn");
+        btns.forEach((b) => (b.disabled = true));
+        answered++;
+        if (chosen === correct) {
+          btn.classList.add("correct");
+          score++;
+        } else {
+          btn.classList.add("wrong");
+          if (quizSettings.showCorrect)
+            btns.forEach((b, i) => {
+              if (displayOpts[i].origIdx === correct) b.classList.add("reveal");
+            });
+          mistakes.push({
+            q: questions[current].q,
+            correct: questions[current].opts[correct],
+          });
+        }
+        document.getElementById("scorePill").textContent =
+          score + " / " + answered;
+        document.getElementById("btnNext").classList.add("show");
+      }
+
+      function nextQuestion() {
+        current++;
+        if (current >= questions.length) {
+          showResults();
+          return;
+        }
+        renderQuestion();
+      }
+
+      function showResults() {
+        const pct = Math.round((score / questions.length) * 100);
+        document.getElementById("gradeNum").textContent = pct + "%";
+        document.getElementById("rCorrect").textContent = score;
+        document.getElementById("rWrong").textContent =
+          questions.length - score;
+        document.getElementById("rPct").textContent =
+          (score * 2.5).toFixed(1) + "б";
+        let grade =
+          pct >= 95
+            ? "Отлично — A"
+            : pct >= 85
+              ? "Хорошо — B+"
+              : pct >= 75
+                ? "Хорошо — B"
+                : pct >= 65
+                  ? "Удовлетворительно — C"
+                  : pct >= 50
+                    ? "Удовлетворительно — D"
+                    : "Неудовлетворительно — F";
+        document.getElementById("resultsTitle").textContent = grade;
+        document.getElementById("resultsSub").textContent =
+          score + " из " + questions.length + " · " + pct + "%";
+        const ml = document.getElementById("mistakesList");
+        if (mistakes.length > 0) {
+          ml.innerHTML = `<div class="mistakes-title">Ошибки (${mistakes.length})</div>`;
+          mistakes.slice(0, 10).forEach((m) => {
+            ml.innerHTML += `<div class="mistake-item"><div class="mistake-q">${m.q}</div><div class="mistake-ans">✓ ${m.correct}</div></div>`;
+          });
+          if (mistakes.length > 10)
+            ml.innerHTML += `<div style="font-size:11px;color:var(--muted);text-align:center;padding:8px">и ещё ${mistakes.length - 10} ошибок...</div>`;
+        } else {
+          ml.innerHTML = `<div style="text-align:center;padding:1rem;color:var(--accent2);font-size:13px">Все ответы верны!</div>`;
+        }
+        show("results");
+      }
+
+      function retryQuiz() {
+        startQuiz();
+      }
+      function goHome() {
+        show("home");
+      }
+
+      function show(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // Init
+      initDB();
+      if (!checkSession()) show("login");
+    </script>
+  </body>
+</html>
